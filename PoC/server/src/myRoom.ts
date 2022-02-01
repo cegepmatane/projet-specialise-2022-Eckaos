@@ -7,12 +7,12 @@ export class MyRoom extends Room<State> {
     console.log("create")
     this.onMessage("action", (client, message) => {
       console.log(client.sessionId, "sent 'action' message: ", message);
+      client.send("action", {message:"hello"})
     });
   }
 
   onJoin (client: Client, options: any) {
     console.log("client "+ client.sessionId +" joined")
-    
   }
 
   onLeave (client: Client, consented: boolean) {
