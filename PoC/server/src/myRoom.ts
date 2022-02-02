@@ -7,7 +7,13 @@ export class MyRoom extends Room<State> {
     console.log("create")
     this.onMessage("action", (client, message) => {
       console.log(client.sessionId, "sent 'action' message: ", message);
-      client.send("action", {message:"hello"})
+      this.clients.forEach(c => {
+        if(c.sessionId !== client.sessionId) {
+          console.log(message.message)
+          var m:string = message.message + " from "+ client.sessionId
+          c.send("action", {message:m})
+        }
+      });
     });
   }
 
