@@ -5,7 +5,7 @@ using Colyseus;
 public class SceneController : MonoBehaviour
 {
     private ColyseusClient client;
-    private ColyseusRoom<State> room;
+    private ColyseusRoom<ConnexionState> room;
     // Start is called before the first frame update
 
     class HelloMessage{
@@ -14,7 +14,7 @@ public class SceneController : MonoBehaviour
     async void Start()
     {
         client = new ColyseusClient("ws://localhost:3000");
-        room = await client.JoinOrCreate<State>("myRoom"/* , Dictionary of options */);
+        room = await client.JoinOrCreate<ConnexionState>("myRoom"/* , Dictionary of options */);
         room.OnMessage<HelloMessage>("action", (message)=>{
             Debug.Log(message.message);
         });
@@ -23,8 +23,13 @@ public class SceneController : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
+    async void Update()
     {
-            
+        if(Input.GetButtonDown("Jump"))
+            await room.Send("action", new {message = "hello"});
+    }
+
+    private void OnApplicationQuit() {
+        if(room != null) room.Leave();
     }
 }
