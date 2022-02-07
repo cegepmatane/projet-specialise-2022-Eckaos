@@ -1,7 +1,5 @@
 import { Room, Client } from "colyseus";
 import { ConnexionState } from "./connexion_state";
-import { Joueur } from "./joueur";
-import { Spectateur } from "./spectateur";
 
 export class MyRoom extends Room<ConnexionState> {
   onCreate (options: any) {
