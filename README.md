@@ -5,8 +5,10 @@ Nathan Pollart
 
 # Description
 
+Arena est un jeu 3D RPG tactique au tour par tour sur une grille ressemblant à Dofus ou à Final Fantasy Tactics Advanced 2. Ce jeu est une succession de combat à difficulté progressive contre des IA. Un mode multijoueur 1v1 où les choix de personnage se font au début, leur niveau est fixé.
 
 # Documents
+
 
 Lien du kickoff => https://docs.google.com/document/d/1K1FEzvJUoQ6R9rUO8DhuwYTyUVGavJOlEyzKUCjozKA/edit?usp=sharing
 
