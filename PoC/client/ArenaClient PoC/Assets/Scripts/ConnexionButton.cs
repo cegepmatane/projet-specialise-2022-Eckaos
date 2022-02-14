@@ -14,7 +14,7 @@ public class ConnexionButton : MonoBehaviour
     void Start()
     {
         Button test = connexionButton.GetComponent<Button>();
-        test.onClick.AddListener(TaskOnClick);
+        test.onClick.AddListener(creerRoom);
         gameClient = findGameClient();
     }
 
@@ -23,7 +23,7 @@ public class ConnexionButton : MonoBehaviour
         return t.GetComponent<GameClient>();
     }
 
-    async void TaskOnClick()
+    async void creerRoom()
     {
         if(gameClient == null)
             gameClient = findGameClient();

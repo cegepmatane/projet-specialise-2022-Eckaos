@@ -9,7 +9,7 @@ public class SendHelloButton : MonoBehaviour
     void Start()
     {
         Button test = deconnexionButton.GetComponent<Button>();
-        test.onClick.AddListener(TaskOnClick);
+        test.onClick.AddListener(sendHello);
         gameClient = findGameClient();
     }
 
@@ -18,7 +18,7 @@ public class SendHelloButton : MonoBehaviour
         return t.GetComponent<GameClient>();
     }
 
-    async void TaskOnClick()
+    async void sendHello()
     {
         await gameClient.room.Send("action", new {message= "hello"});
     }

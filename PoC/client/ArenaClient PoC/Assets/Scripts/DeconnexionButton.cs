@@ -9,7 +9,7 @@ public class DeconnexionButton : MonoBehaviour
     void Start()
     {
         Button test = deconnexionButton.GetComponent<Button>();
-        test.onClick.AddListener(TaskOnClick);
+        test.onClick.AddListener(leaveRoom);
         gameClient = findGameClient();
     }
 
@@ -18,7 +18,7 @@ public class DeconnexionButton : MonoBehaviour
         return t.GetComponent<GameClient>();
     }
 
-    void TaskOnClick()
+    void leaveRoom()
     {
         if(gameClient == null) 
             gameClient = findGameClient();
