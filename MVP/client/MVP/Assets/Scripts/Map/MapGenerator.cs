@@ -9,6 +9,8 @@ public class MapGenerator : MonoBehaviour
     Vector3[] vertices;
     int[] triangles;
 
+    int[ , ] mapHeights;
+
     public int xSize = 10;
     public int zSize = 10;
     public int ySize = 3;
@@ -17,7 +19,7 @@ public class MapGenerator : MonoBehaviour
     {
         mesh = new Mesh();
         GetComponent<MeshFilter>().mesh = mesh;
-
+        GenerateMap();
         CreateShape();
     }
 
@@ -27,70 +29,62 @@ public class MapGenerator : MonoBehaviour
     }
 
     void CreateShape(){
-        vertices = new Vector3[(xSize+1)*(zSize+1)*4];
-        CreateVertices();
-        CreateTopTriangles();
+        vertices = new Vector3[xSize*zSize*8];
+        triangles = new int[xSize*zSize*12*3];
+        CreateCubes();
     }
 
-    void CreateVertices(){
-        int i = -1;
+    void CreateCubes(){;
+        int triangleIndex = 0;
+        int verticesIndex = 0;
         for (int z = 0; z < zSize; z++)
-        {
             for (int x = 0; x < xSize; x++)
-            {
-                vertices[++i] = new Vector3(x,0,z);
-            }
-        }
+                CreateCube(ref triangleIndex, ref verticesIndex, x, z);
+    }
+
+    void CreateCube(ref int triangleIndex, ref int verticesIndex, int x, int z){
+        Vector3[] cubeVertices = CreateCubeVertices(x, z, mapHeights[x,z]);
+        int[] cubeTriangles = CreateCubeTriangles(x, z, verticesIndex);
+
+        cubeVertices.CopyTo(vertices,verticesIndex);
+        cubeTriangles.CopyTo(triangles, triangleIndex);
+
+        triangleIndex += cubeTriangles.Length;
+        verticesIndex += cubeVertices.Length;
     }
     
-    void CreateTriangles(){
-        //2 Triangles en haut
-        //2 Triangles pour chaque cotes
-        
-        
-        CreateTopTriangles();
-        //CreateSideTriangles();
-    }
-
-    void CreateTopTriangles(){
-        triangles = new int[xSize * zSize * 6];
-        int tris = 0;
-        int vert = 0;
-        for (int z = 0; z < zSize; z++)
+    Vector3[] CreateCubeVertices(int x, int z, int y){
+        return new Vector3[]
         {
-            for (int x = 0; x < xSize; x++)
-            {
-                
-                triangles[tris + 0] = vert + 0;
-                triangles[tris + 1] = vert + xSize + 1;
-                triangles[tris + 2] = vert + 1;
-                triangles[tris + 3] = vert;
-                triangles[tris + 4] = vert + xSize;
-                triangles[tris + 5] = vert + xSize + 1;
-                vert++;
-                tris+=6;
-            }
-        }
+            new Vector3(x,y,z),
+            new Vector3(x+1,y,z),
+            new Vector3(x+1,0,z),
+            new Vector3(x,0,z),
+            new Vector3(x,0,z+1),
+            new Vector3(x+1,0,z+1),
+            new Vector3(x+1,y,z+1),
+            new Vector3(x,y,z+1),
+        };
     }
 
-    void CreateSideTriangles(){
-
+    int[] CreateCubeTriangles(int x, int z, int index){
+        return new int[]
+        {
+            index, index+2, index+1, //face front
+	        index, index+3, index+2,
+	        index+2, index+3, index+4, //face top
+	        index+2, index+4, index+5,
+	        index+1, index+2, index+5, //face right
+	        index+1, index+5, index+6,
+	        index, index+7, index+4, //face left
+	        index, index+4, index+3,
+	        index+5, index+4, index+7, //face back
+	        index+5, index+7, index+6,
+	        index, index+6, index+7, //face bottom
+	        index, index+1, index+6
+        };
     }
 
-    void CreateFirstRectangleVertices(ref int i){
-        vertices[++i] = new Vector3(0, 0, 0);
-        vertices[++i] = new Vector3(1, 0, 0);
-        vertices[++i] = new Vector3(0, 0, 1);
-        vertices[++i] = new Vector3(1, 0, 1);
-    }
-    void CreateRectangleVertices(int x, int z, ref int i){
-        float previousHeight = vertices[i-1].y;
-        float newHeight = (int) Random.Range(previousHeight-1, previousHeight+2);
-        vertices[++i] = new Vector3(x, newHeight, z);
-        vertices[++i] = new Vector3(x+1, newHeight, z);
-        vertices[++i] = new Vector3(x, newHeight, z+1);
-        vertices[++i] = new Vector3(x+1, newHeight, z+1);
-    }
     void UpdateMesh(){
         mesh.Clear();
         mesh.vertices = vertices;
@@ -98,13 +92,29 @@ public class MapGenerator : MonoBehaviour
         mesh.RecalculateNormals(); 
     }
 
-    private void OnDrawGizmos() {
-        if(vertices == null)
-            return;
+    private List<(int x, int z)> positionList = new List<(int x, int z)>{(1,0), (-1,0), (0,1), (0,-1)};
+    private void GenerateMap(){
+        mapHeights = new int[xSize,zSize];
+        Queue<(int x, int z)> MarkedPoints = new Queue<(int x, int z)>();
         
-        for (int i = 0; i < vertices.Length; i++)
+        mapHeights[0,0] = Random.Range(2,6);
+        MarkedPoints.Enqueue(((xSize+1)/2,(zSize+1)/2));
+
+        while (MarkedPoints.Count > 0)
         {
-            Gizmos.DrawSphere(vertices[i], .1f);
+            (int x, int z) actualPoints = MarkedPoints.Dequeue();
+            foreach (var position in positionList)
+            {
+                (int x, int z) newPoint = (actualPoints.x+position.x, actualPoints.z+position.z);
+                if(!IsInMap(newPoint) || mapHeights[newPoint.x, newPoint.z] != 0)
+                    continue;
+                int lastHeight = mapHeights[actualPoints.x, actualPoints.z];
+                mapHeights[newPoint.x, newPoint.z] = Random.Range(lastHeight-1 < 1 ? lastHeight : lastHeight-1 , lastHeight+2);
+                MarkedPoints.Enqueue(newPoint);
+            }
         }
+    }
+    private bool IsInMap((int x, int z) position){
+        return position.x >= 0 && position.x < xSize && position.z >= 0 && position.z < zSize;
     }
 }
