@@ -1,88 +1,119 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class MapGenerator : MonoBehaviour
 {
-    private int[ , ] mapHeights;
-
-    public int xSize = 10;
-    public int zSize = 10;
-
-    public int maxHeight = 4;
-    private GameObject map;
+    // Start is called before the first frame update
+    private bool[,] walls;
     public Material tileMaterial;
 
-    private List<GameObject> cubes;
+    public int xSize = 5;
+    public int zSize = 5;
+    private int numberOfWalls;
 
-    // Start is called before the first frame update
     void Start()
     {
         GenerateMap();
     }
-    
+
     public void GenerateMap()
     {
         DeleteMap();
-        GenerateMapHeight();
-        CreateMap();
+        GenerateWallPositions();
+        GenerateShape();
     }
 
     public void DeleteMap()
     {
-        foreach (GameObject mapObject in GameObject.FindGameObjectsWithTag("Map"))
+        foreach (GameObject map in GameObject.FindGameObjectsWithTag("Map"))
         {
-            DestroyImmediate(mapObject);
+            DestroyImmediate(map);
         }
     }
 
-    private void CreateMap()
+    void GenerateWallPositions()
     {
-        cubes = new List<GameObject>();
-        map = new GameObject("Map");
-        map.tag = "Map";
-        for (int i = 0; i < xSize; i++)
+        int min = (int) Mathf.Log(xSize*zSize, 2);
+        int max = xSize <= zSize ? xSize : zSize;
+        numberOfWalls = Random.Range(min, max);
+        InitWalls();
+        for (int i = 0; i < numberOfWalls; i++)
         {
-            CreateRow(i);
+            GenerateWall();
         }
     }
 
-    private void CreateRow(int i){
-        GameObject row = new GameObject("Row"+i);
-        row.transform.SetParent(map.transform);
-        for (int j = 0; j < zSize; j++)
+    void GenerateWall()
+    {
+        int x, z;
+        do
         {
-            GameObject cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
-            cube.transform.position = new Vector3(i,mapHeights[i,j],j);
-            cube.transform.SetParent(row.transform);
-            cube.tag = "Tile";
-            cubes.Add(cube);
-            if(tileMaterial != null) cube.GetComponent<Renderer>().material = tileMaterial;
-        }
+            x = Random.Range(0,xSize);
+            z = Random.Range(0,zSize);
+        } while (walls[x, z]);
+        walls[x, z] = true;
     }
 
-    private List<(int x, int z)> positionList = new List<(int x, int z)>{(1,0), (-1,0), (0,1), (0,-1)};
-    private void GenerateMapHeight(){
-        mapHeights = new int[xSize,zSize];
-        Queue<(int x, int z)> MarkedPoints = new Queue<(int x, int z)>();
-        
-        mapHeights[(xSize+1)/2, (zSize+1)/2] = Random.Range(2,6);
-        MarkedPoints.Enqueue(((xSize+1)/2,(zSize+1)/2));
-
-        while (MarkedPoints.Count > 0)
+    void InitWalls()
+    {
+        walls = new bool[xSize, zSize];
+        for (int x = 0; x < xSize; x++)
         {
-            (int x, int z) actualPoints = MarkedPoints.Dequeue();
-            foreach (var position in positionList)
+            for (int z = 0; z < zSize; z++)
             {
-                (int x, int z) newPoint = (actualPoints.x+position.x, actualPoints.z+position.z);
-                if(!IsInMap(newPoint) || mapHeights[newPoint.x, newPoint.z] != 0)
-                    continue;
-                int lastHeight = mapHeights[actualPoints.x, actualPoints.z];
-                mapHeights[newPoint.x, newPoint.z] = Random.Range(lastHeight-1 < 1 ? lastHeight : lastHeight-1 , lastHeight+1 > maxHeight? maxHeight+1 : lastHeight+2);
-                MarkedPoints.Enqueue(newPoint);
+                walls[x, z] = false;
             }
         }
     }
-    private bool IsInMap((int x, int z) position){
-        return position.x >= 0 && position.x < xSize && position.z >= 0 && position.z < zSize;
+
+    void GenerateShape()
+    {
+        GameObject map = new GameObject("Map");
+        map.tag = "Map";
+        for (int x = 0; x < xSize; x++)
+        {
+            GameObject row = new GameObject("Row"+x);
+            row.transform.SetParent(map.transform);
+            for (int z = 0; z < zSize; z++)
+            {
+                GameObject tile;
+                if(walls[x,z])
+                    tile = GenerateWallTile(x, z);
+                else
+                    tile = GenerateGroundTile(x, z);
+
+                tile.transform.SetParent(row.transform);
+                Renderer tileRenderer = tile.GetComponent<Renderer>();
+                tileRenderer.material = GenerateMaterial(tile);
+            }
+        }
+    }
+
+    Material GenerateMaterial(GameObject tile)
+    {
+        if(tileMaterial == null) return null;
+        Renderer tileRenderer = tile.GetComponent<Renderer>();
+        Material material = new Material(tileMaterial);
+        if(tile.tag == "Wall") material.color = Color.black;
+        if(tile.tag == "Ground") material.color = Color.white;
+        tileRenderer.material = material;
+        return material;
+    }
+    GameObject GenerateWallTile(int x, int z)
+    {
+        GameObject wall = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        wall.transform.position = new Vector3(x,0.25f,z);
+        wall.transform.localScale = new Vector3(1,1.5f,1);
+        wall.tag = "Wall";
+        return wall;
+    }
+
+    GameObject GenerateGroundTile(int x, int z)
+    {
+        GameObject ground = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        ground.transform.position = new Vector3(x,0,z);
+        ground.tag = "Ground";
+        return ground;
     }
 }
