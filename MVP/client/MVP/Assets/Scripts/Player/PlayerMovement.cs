@@ -76,6 +76,8 @@ public class PlayerMovement : MonoBehaviour
         if(Physics.Raycast(ray, out hit))
             if(IsSelectedTileValidForMovement(hit.collider.gameObject))
                 FindPath(hit.collider.gameObject);
+            else
+                HighlightTiles(selectableTiles, SELECTABLE_TILE_COLOR);
     }
 
     void FindPath(GameObject target){
