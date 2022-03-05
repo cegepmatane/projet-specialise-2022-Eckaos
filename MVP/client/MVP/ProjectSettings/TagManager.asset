@@ -4,10 +4,10 @@
 TagManager:
   serializedVersion: 2
   tags:
-  - Tile
   - Map
   - Wall
   - Ground
+  - Character
   layers:
   - Default
   - TransparentFX
