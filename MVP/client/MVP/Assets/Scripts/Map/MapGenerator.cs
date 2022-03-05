@@ -12,9 +12,6 @@ public class MapGenerator : MonoBehaviour
     private int numberOfWalls;
 
     private GameObject[,] tiles;
-
-    public const string GROUND_TAG = "Ground";
-    public const string WALL_TAG = "Wall";
     public const string MAP_TAG = "Map";
 
     void Start()
@@ -102,8 +99,8 @@ public class MapGenerator : MonoBehaviour
         if(tileMaterial == null) return null;
         Renderer tileRenderer = tile.GetComponent<Renderer>();
         Material material = new Material(tileMaterial);
-        if(tile.tag == WALL_TAG) material.color = Color.black;
-        if(tile.tag == GROUND_TAG) material.color = Color.white;
+        if(tile.tag == Tile.WALL_TAG) material.color = Color.black;
+        if(tile.tag == Tile.GROUND_TAG) material.color = Color.white;
         tileRenderer.material = material;
         return material;
     }
@@ -113,7 +110,7 @@ public class MapGenerator : MonoBehaviour
         wall.name = "Wall("+x+","+z+")";
         wall.transform.position = new Vector3(x,0.25f,z);
         wall.transform.localScale = new Vector3(1,1.5f,1);
-        wall.tag = WALL_TAG;
+        wall.tag = Tile.WALL_TAG;
         return wall;
     }
 
@@ -122,7 +119,7 @@ public class MapGenerator : MonoBehaviour
         GameObject ground = GameObject.CreatePrimitive(PrimitiveType.Cube);
         ground.name = "Tile("+x+","+z+")";
         ground.transform.position = new Vector3(x,0,z);
-        ground.tag = GROUND_TAG;
+        ground.tag = Tile.GROUND_TAG;
         return ground;
     }
 }

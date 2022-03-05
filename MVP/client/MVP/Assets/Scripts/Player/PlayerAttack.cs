@@ -1,18 +1,12 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using System.Linq;
 
 public class PlayerAttack : MonoBehaviour
 {
-
     public int range;
     public (int min, int max) damageRange;
     private List<Tile> attackableTiles;
     private Tile tileToAttack;
-    private readonly Color ATTACKABLE_TILE_COLOR = Color.blue;
-    private readonly Color TILE_TO_ATTACK_COLOR = Color.red;
-    private readonly Color NORMAL_COlOR = Color.white;
     void Update()
     {
         if(attackableTiles != null)
@@ -25,7 +19,7 @@ public class PlayerAttack : MonoBehaviour
     {
         //if(tileToAttack != null) return;
         attackableTiles = TileMap.GetInstance().AttackBFS(GetCurrentTile(), range);
-        HighlightTiles(attackableTiles, ATTACKABLE_TILE_COLOR);
+        HighlightTiles(attackableTiles, Tile.IN_RANGE_COLOR);
     }
     void TileSelection()
     {
@@ -38,19 +32,18 @@ public class PlayerAttack : MonoBehaviour
             if(IsSelectableTileValidForAttack(target))
                 SetTileToAttack(target);
             else
-                HighlightTiles(attackableTiles, ATTACKABLE_TILE_COLOR);
+                HighlightTiles(attackableTiles, Tile.IN_RANGE_COLOR);
         }        
     }
 
     void SetTileToAttack(Tile target)
     {
         tileToAttack = target;
-        HighlightTiles(attackableTiles, ATTACKABLE_TILE_COLOR);
-        HighlightTile(tileToAttack, TILE_TO_ATTACK_COLOR);
+        HighlightTile(tileToAttack, Tile.ATTACK_COLOR);
         if(Input.GetMouseButtonUp(0))
         {
             tileToAttack = target;
-            HighlightTiles(attackableTiles, NORMAL_COlOR);
+            HighlightTiles(attackableTiles, Tile.NORMAL_COLOR);
             attackableTiles = null;
         }
     }

@@ -213,25 +213,3 @@ public class TileMap {
 
     private int CalculateHValue(int x, int z, (int x, int z) dest) => Mathf.Abs(x-dest.x)+Mathf.Abs(z-dest.z);
 }
-
-public class Tile
-{
-    public GameObject ground;
-    public GameObject player;
-    public int x;
-    public int z;
-
-    public Tile(int x, int z, GameObject ground, GameObject player)
-    {
-        this.ground = ground;
-        this.player = player;
-        this.x = x;
-        this.z = z;
-    }
-
-    public bool IsWalkable() => IsGround() && player == null;
-    public bool IsGround() => ground.tag == "Ground";
-    
-    public static bool operator ==(Tile tile, Tile tile2) => !(tile is null) && !(tile2 is null) && tile.x == tile2.x && tile.z == tile2.z && tile.ground == tile2.ground && tile.player == tile2.player;
-    public static bool operator !=(Tile tile, Tile tile2) => tile is null || tile2 is null || tile.x != tile2.x || tile.z != tile2.z || tile.ground != tile2.ground || tile.player != tile2.player;
-}

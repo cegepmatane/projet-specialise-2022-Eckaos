@@ -14,10 +14,6 @@ public class PlayerMovement : MonoBehaviour
     private TileMap map;
     private Tile currentTile;
 
-    private readonly Color NORMAL_COLOR = Color.white;
-    private readonly Color SELECTABLE_TILE_COLOR = Color.blue;
-    private readonly Color PATH_TILE_COLOR = Color.green;
-
     private void Update() {
         GetCurrentTile();
         if(selectableTiles != null)
@@ -37,13 +33,13 @@ public class PlayerMovement : MonoBehaviour
     {
         if(path != null && path.Count>0) return;
         selectableTiles = TileMap.GetInstance().MovingBFS(GetCurrentTile(), movementPoint);
-        HighlightTiles(selectableTiles, SELECTABLE_TILE_COLOR);
+        HighlightTiles(selectableTiles, Tile.IN_RANGE_COLOR);
     }
 
     void HighlightPathTiles(Stack<Tile> path)
     {
         if(path == null || path.Count <= 0) return;
-        HighlightTiles(path, PATH_TILE_COLOR);
+        HighlightTiles(path, Tile.PATH_COLOR);
     }
 
     void HighlightTiles(IEnumerable<Tile> tiles, Color color)
@@ -85,14 +81,14 @@ public class PlayerMovement : MonoBehaviour
             if(IsSelectedTileValidForMovement(target))
                 FindPath(target);
             else
-                HighlightTiles(selectableTiles, SELECTABLE_TILE_COLOR);
+                HighlightTiles(selectableTiles, Tile.IN_RANGE_COLOR);
         }
             
     }
 
     void FindPath(Tile target){
         Stack<Tile> tempPath = TileMap.GetInstance().AStarSearch(GetCurrentTile(), target);
-        HighlightTiles(selectableTiles, SELECTABLE_TILE_COLOR);
+        HighlightTiles(selectableTiles, Tile.IN_RANGE_COLOR);
         HighlightPathTiles(tempPath);
         if(Input.GetMouseButtonUp(0))
             SetPath(tempPath);
@@ -100,7 +96,7 @@ public class PlayerMovement : MonoBehaviour
     void SetPath(Stack<Tile> tempPath)
     {
         path = tempPath;
-        HighlightTiles(selectableTiles, NORMAL_COLOR);
+        HighlightTiles(selectableTiles, Tile.NORMAL_COLOR);
         selectableTiles = null;
     }
 
