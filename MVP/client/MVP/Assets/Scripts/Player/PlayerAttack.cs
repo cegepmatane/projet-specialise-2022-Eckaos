@@ -39,6 +39,7 @@ public class PlayerAttack : MonoBehaviour
     void SetTileToAttack(Tile target)
     {
         tileToAttack = target;
+        HighlightTiles(attackableTiles, Tile.IN_RANGE_COLOR);
         HighlightTile(tileToAttack, Tile.ATTACK_COLOR);
         if(Input.GetMouseButtonUp(0))
         {
