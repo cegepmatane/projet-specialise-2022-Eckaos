@@ -11,8 +11,8 @@ public class Character : MonoBehaviour
     public Class classData;
 
     private void Start() {
-        var classAssets = Resources.FindObjectsOfTypeAll<Class>();
         TileMap.GetInstance().GetTile((int)transform.position.x, (int)transform.position.z).player = gameObject;
+        var classAssets = Resources.LoadAll<Class>("Class");
         classData = classAssets.GetValue(Random.Range(0, classAssets.Length)) as Class;
         attackAction = new CharacterAttack(this, classData.attackRange);
         movementAction = new CharacterMovement(this, classData.movementPoint);
@@ -21,12 +21,15 @@ public class Character : MonoBehaviour
 
     void Update()
     {
+        if(movementAction == null || skillAction == null || attackAction == null) return;
         if(movementAction.IsSelecting())
             movementAction.TileSelection();
         else if(attackAction.IsSelecting())
             attackAction.TileSelection();
         else if(skillAction.IsSelecting())
             skillAction.TileSelection();
+        else
+            TileMap.GetInstance().GetTile((int)transform.position.x, (int)transform.position.z).player = gameObject;
         
         if(movementAction.IsExecuting())
             movementAction.Execute();

@@ -8,7 +8,7 @@ using System.Collections.ObjectModel;
 public class CharacterStatistic
 {
     public int baseValue;
-    private float value { get { return CalculateFinalValue(); } }
+    public float value { get { return CalculateFinalValue(); } }
     private readonly List<StatisticModifier> statisticModifiers;
     private bool hasChanged = true;
 
