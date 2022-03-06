@@ -10,11 +10,10 @@ public class MapGenerator : MonoBehaviour
     public int xSize = 5;
     public int zSize = 5;
     private int numberOfWalls;
-
     private GameObject[,] tiles;
     public const string MAP_TAG = "Map";
 
-    void Start()
+    void Awake()
     {
         GenerateMap();
     }
