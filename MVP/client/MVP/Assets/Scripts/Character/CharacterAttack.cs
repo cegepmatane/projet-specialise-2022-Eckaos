@@ -1,86 +1,47 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CharacterAttack
+public class CharacterAttack : CharacterAction
 {
     public int attackRange;
-    private List<Tile> attackableTiles;
     private Tile tileToAttack;
-    private GameObject character;
-    private bool isSelecting;
-    private bool isAttacking;
 
-
-    public CharacterAttack(GameObject character, int attackRange = 1)
+    public CharacterAttack(Character character, int attackRange = 1) : base(character)
     {
-        this.character = character;
-        this.attackRange = attackRange;
+        this.attackRange = character.classData.attackRange;
     }
 
-    public bool IsSelecting() => isSelecting;
-    public bool IsAttacking() => isAttacking;
-    public void GetAttackableTiles()
+    public override void GetSelectableTiles()
     {
-        if(tileToAttack == null) return;
-        attackableTiles = TileMap.GetInstance().AttackBFS(GetCurrentTile(), attackRange);
-        HighlightTiles(attackableTiles, Tile.IN_RANGE_COLOR);
+        selectableTiles = map.AttackBFS(GetCurrentTile(), attackRange);
+        HighlightTiles(selectableTiles, Tile.IN_RANGE_COLOR);
         isSelecting = true;
     }
-    public void TileSelection()
-    {
-        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-        RaycastHit hit;
-        if(Physics.Raycast(ray, out hit))
-        {
-            Vector3 targetPosition = hit.collider.transform.position;
-            Tile target = TileMap.GetInstance().GetTile((int)targetPosition.x, (int)targetPosition.z);
-            if(IsSelectableTileValidForAttack(target))
-                SetTileToAttack(target);
-            else
-                HighlightTiles(attackableTiles, Tile.IN_RANGE_COLOR);
-        }        
-    }
 
-    void SetTileToAttack(Tile target)
+    protected override void SetUpExecution(Tile target)
     {
         tileToAttack = target;
-        HighlightTiles(attackableTiles, Tile.IN_RANGE_COLOR);
+        HighlightTiles(selectableTiles, Tile.IN_RANGE_COLOR);
         HighlightTile(tileToAttack, Tile.ATTACK_COLOR);
         if(Input.GetMouseButtonUp(0))
         {
             tileToAttack = target;
-            HighlightTiles(attackableTiles, Tile.NORMAL_COLOR);
-            attackableTiles = null;
+            HighlightTiles(selectableTiles, Tile.NORMAL_COLOR);
+            selectableTiles = null;
             isSelecting = false;
-            isAttacking = true;
+            isExecuting = true;
         }
     }
-    public void Execute()
+    public override void Execute()
     {
         if(tileToAttack == null) return;
         //TODO get component with life et lui enlever un nombre random dans la damageRange
         tileToAttack = null;
-        isAttacking = false;
+        isExecuting = false;
     }
 
-    private bool IsSelectableTileValidForAttack(Tile tile)
+    protected override bool IsSelectedTileValid(Tile tile)
     {
-        return attackableTiles != null && tile.IsGround() && attackableTiles.Contains(tile);
-    }
-
-    private Tile GetCurrentTile()
-    {
-        return TileMap.GetInstance().GetTile((int)character.transform.position.x, (int)character.transform.position.z);
-    }
-
-    void HighlightTiles(IEnumerable<Tile> tiles, Color color)
-    {
-        foreach (Tile tile in tiles)
-            tile.ground.GetComponent<Renderer>().material.color = color;
-    }
-
-    void HighlightTile(Tile tile, Color color)
-    {
-        tile.ground.GetComponent<Renderer>().material.color = color;
+        return selectableTiles != null && tile.IsGround() && selectableTiles.Contains(tile);
     }
 }
