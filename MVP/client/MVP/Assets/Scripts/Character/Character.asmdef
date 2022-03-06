@@ -1,11 +1,16 @@
 {
-    "name": "Editor",
+    "name": "PlayerActions",
     "rootNamespace": "",
     "references": [
-        "GUID:c6c9491dac62d634292c6a92016fc41f"
+        "GUID:c6c9491dac62d634292c6a92016fc41f",
+        "GUID:c95481d20b9e6cb4e8113f2b95cb79c9"
     ],
     "includePlatforms": [
-        "Editor"
+        "Editor",
+        "LinuxStandalone64",
+        "WSA",
+        "WindowsStandalone32",
+        "WindowsStandalone64"
     ],
     "excludePlatforms": [],
     "allowUnsafeCode": false,

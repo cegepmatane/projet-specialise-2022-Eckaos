@@ -1,11 +1,13 @@
 {
-    "name": "Editor",
+    "name": "MapRelated",
     "rootNamespace": "",
-    "references": [
-        "GUID:c6c9491dac62d634292c6a92016fc41f"
-    ],
+    "references": [],
     "includePlatforms": [
-        "Editor"
+        "Editor",
+        "LinuxStandalone64",
+        "WSA",
+        "WindowsStandalone32",
+        "WindowsStandalone64"
     ],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
