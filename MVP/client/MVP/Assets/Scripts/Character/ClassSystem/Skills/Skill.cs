@@ -10,9 +10,8 @@ public abstract class Skill : ScriptableObject
         caster.classData.manaPoints -= manaCost;
     }
     protected Character GetCharacterFromTile(Tile tile) {
-        if(tile == null || tile.ground ==null || tile.player == null) return null;
+        if(tile == null || tile.player == null) return null;
         Character c = tile.player.GetComponent<Character>();
-        if(c == null) return null;
         return c;
     } 
 }

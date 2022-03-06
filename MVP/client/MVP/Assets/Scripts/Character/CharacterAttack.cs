@@ -34,7 +34,6 @@ public class CharacterAttack : CharacterAction
     }
     public override void Execute()
     {
-        if(tileToAttack == null) return;
         //TODO get component with life et lui enlever un nombre random dans la damageRange
         tileToAttack = null;
         isExecuting = false;

@@ -4,16 +4,13 @@ using UnityEngine;
 
 public class CharacterSkill : CharacterAction
 {
-    private Skill skill;
+    public Skill skill;
     private Tile tileToAttack;
-    public CharacterSkill(Character character, Skill skill) :base(character)
-    {
-        this.skill = skill;
-    }
+    public CharacterSkill(Character character) :base(character){}
+
 
     public override void Execute()
     {
-        if(tileToAttack == null || tileToAttack.player == null) return;
         skill.Execute(character, tileToAttack);
         tileToAttack = null;
         isExecuting = false;

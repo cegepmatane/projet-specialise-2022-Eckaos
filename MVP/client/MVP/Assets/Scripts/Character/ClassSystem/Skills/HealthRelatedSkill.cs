@@ -8,6 +8,8 @@ public class HealthRelatedSkill : Skill
     public override void Execute(Character caster, Tile target)
     {
         base.Execute(caster, target);
-        this.GetCharacterFromTile(target).classData.lifePoints += amount;
+        Character c = GetCharacterFromTile(target);
+        if(c == null) return;
+        c.classData.lifePoints += amount;
     }
 }

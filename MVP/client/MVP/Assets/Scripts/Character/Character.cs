@@ -16,7 +16,7 @@ public class Character : MonoBehaviour
         classData = classAssets.GetValue(Random.Range(0, classAssets.Length)) as Class;
         attackAction = new CharacterAttack(this, classData.attackRange);
         movementAction = new CharacterMovement(this, classData.movementPoint);
-        skillAction = new CharacterSkill(this, classData.firstSkill);
+        skillAction = new CharacterSkill(this);
     }
 
     void Update()
@@ -48,9 +48,27 @@ public class Character : MonoBehaviour
         attackAction.GetSelectableTiles();
     }
 
-    public void InSkillRangeSelectableTile()
+    private void InSkillRangeSelectableTile()
     {
         if(!movementAction.IsUsed() && !attackAction.IsUsed())
         skillAction.GetSelectableTiles();
+    }
+
+    public void InSkill1RangeSelectableTile()
+    {
+        (skillAction as CharacterSkill).skill = classData.firstSkill;
+        InSkillRangeSelectableTile();
+    }
+
+    public void InSkill2RangeSelectableTile()
+    {
+        (skillAction as CharacterSkill).skill = classData.secondSkill;
+        InSkillRangeSelectableTile();
+    }
+
+    public void InSkill3RangeSelectableTile()
+    {
+        (skillAction as CharacterSkill).skill = classData.thirdSkill;
+        InSkillRangeSelectableTile();
     }
 }

@@ -8,6 +8,8 @@ public class StrengthBuffSkill : BuffRelatedSkill
     public override void Execute(Character caster, Tile target)
     {
         base.Execute(caster, target);
-        this.GetCharacterFromTile(target).classData.strength.AddModifier(this.CreateModifier());
+        Character c = GetCharacterFromTile(target);
+        if(c == null) return;
+        c.classData.strength.AddModifier(this.CreateModifier());
     }
 }
