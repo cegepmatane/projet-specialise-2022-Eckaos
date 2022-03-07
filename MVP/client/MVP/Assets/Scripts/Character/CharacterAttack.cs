@@ -13,6 +13,8 @@ public class CharacterAttack : CharacterAction
 
     public override void GetSelectableTiles()
     {
+        HighlightTiles(map.GetTileList(), Tile.NORMAL_COLOR);
+        Debug.Log(character);
         selectableTiles = map.AttackBFS(GetCurrentTile(), attackRange);
         HighlightTiles(selectableTiles, Tile.IN_RANGE_COLOR);
         isSelecting = true;
@@ -37,6 +39,7 @@ public class CharacterAttack : CharacterAction
         //TODO get component with life et lui enlever un nombre random dans la damageRange
         tileToAttack = null;
         isExecuting = false;
+        hasExecuted = true;
     }
 
     protected override bool IsSelectedTileValid(Tile tile)

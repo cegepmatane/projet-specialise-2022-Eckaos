@@ -2,7 +2,8 @@
     "name": "TurnManager",
     "rootNamespace": "",
     "references": [
-        "GUID:e4ede8b8c05abde4ba98c937a67eba7c"
+        "GUID:e4ede8b8c05abde4ba98c937a67eba7c",
+        "GUID:c6c9491dac62d634292c6a92016fc41f"
     ],
     "includePlatforms": [
         "Editor",

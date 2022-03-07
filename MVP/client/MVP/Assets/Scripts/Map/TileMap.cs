@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 public class TileMap {
     
     private static TileMap map;
@@ -26,6 +27,11 @@ public class TileMap {
         if(!IsValid(x, z)) return null;
         return tileMap[x,z];
     } 
+
+    public List<Tile> GetTileList()
+    {
+        return tileMap.Cast<Tile>().Where(tile => tile.ground.tag == Tile.GROUND_TAG).ToList();
+    }
     public void SetTile(int x, int z, GameObject ground = null, GameObject player = null) => tileMap[x,z] = new Tile(x,z, ground, player);
 
     public List<Tile> MovingBFS(Tile root, int maxRange)

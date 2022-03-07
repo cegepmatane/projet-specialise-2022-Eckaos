@@ -1,32 +1,49 @@
-using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 using System.Linq;
+using UnityEngine;
 
 public class TurnManager : MonoBehaviour
 {
     private List<Character> characters;
-    private List<int> turnMeters;
-    private int indexOfLastTurn;
+
+    private int turn = 0;
+
+    public TurnIndicator turnIndicator;
 
     private void Start() {
         characters = new List<Character>();
-        foreach (GameObject c in GameObject.FindGameObjectsWithTag("Character"))
-            characters.Add(c.GetComponent<Character>());
-        turnMeters = new List<int>();
-        foreach (Character c in characters)
-            turnMeters.Add(0);
     }
-    
-    public Character GetNextCharacterToPlay()
+
+    public Character GetTurn()
     {
-        while (!turnMeters.Exists(meter => meter >= 100))
-        {
-            for (int i=0; i<turnMeters.Count; i++)
-                turnMeters[i] += (int)characters[i].classData.speed.value;
-        }
-        int index = turnMeters.FindIndex(meter => meter >= 100);
-        turnMeters[index] = 0;
-        return characters[index];
+        var characterList = GameObject.FindGameObjectsWithTag("Character");
+        if(characters.Count != characterList.Length)CreateTurnList(characterList);
+        Character character = characters[turn];
+        turnIndicator.UpdateIndicator(characters, character);
+        if(turn < characters.Count-1)turn++;
+        else turn = 0;
+        Debug.Log(character.classData.speed);
+        return character;
     }
+
+    public void CreateTurnList(GameObject[] characterList)
+    {
+        characters.Clear();
+        characters = characterList.Select(charObj => charObj.GetComponent<Character>()).ToList();
+        characters.Sort(SortBySpeed);
+    }
+
+
+    public int SortBySpeed(Character a, Character b)
+    {
+        if(a.classData.speed > b.classData.speed) return -1;
+        else if(a.classData.speed < b.classData.speed) return 1;
+        else return 0;
+    }
+
+    public void TestTurn()
+    {
+        GetTurn();
+    }
+
 }

@@ -13,24 +13,22 @@ public class CharacterMovement : CharacterAction
     public CharacterMovement(Character character, int movementPoint = 5) : base(character)
     {
         this.movementPoint = movementPoint;
+        isSelecting = false;
     }
     public override void GetSelectableTiles()
     {
         if(path != null && path.Count>0) return;
         currentTile = GetCurrentTile();
         selectableTiles = map.MovingBFS(currentTile, movementPoint);
-        HighlightTiles(selectableTiles, Tile.IN_RANGE_COLOR);
-        isSelecting = true;
+        //HighlightTiles(selectableTiles, Tile.IN_RANGE_COLOR);
     }
 
     public override void Execute()
     {
         if(path == null || path.Count <= 0)
         {
-            currentTile.player = null;
-            currentTile = GetCurrentTile();
-            currentTile.player = character.gameObject;
             isExecuting = false;
+            hasExecuted = true;
             return;
         }
         Tile tile = path.Peek();
@@ -46,13 +44,22 @@ public class CharacterMovement : CharacterAction
         }else
         {   
             character.transform.position = target;
+            currentTile.player = null;
+            currentTile = GetCurrentTile();
+            currentTile.player = character.gameObject;
             path.Pop();
         }
     }
 
+    public override void TileSelection()
+    {
+        GetSelectableTiles();
+        base.TileSelection();
+    }
+
     protected override void SetUpExecution(Tile target){
         Stack<Tile> tempPath = map.AStarSearch(GetCurrentTile(), target);
-        HighlightTiles(selectableTiles, Tile.IN_RANGE_COLOR);
+        HighlightTiles(selectableTiles, Tile.NORMAL_COLOR);
         HighlightTiles(tempPath, Tile.PATH_COLOR);
         if(Input.GetMouseButtonUp(0))
             SetPath(tempPath);
@@ -63,7 +70,6 @@ public class CharacterMovement : CharacterAction
         path = tempPath;
         HighlightTiles(selectableTiles, Tile.NORMAL_COLOR);
         selectableTiles = null;
-        isSelecting = false;
         isExecuting = true;
     }
 

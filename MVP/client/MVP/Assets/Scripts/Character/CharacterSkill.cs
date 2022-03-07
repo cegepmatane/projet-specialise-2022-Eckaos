@@ -14,10 +14,12 @@ public class CharacterSkill : CharacterAction
         skill.Execute(character, tileToAttack);
         tileToAttack = null;
         isExecuting = false;
+        hasExecuted = true;
     }
 
     public override void GetSelectableTiles()
     {
+        HighlightTiles(map.GetTileList(), Tile.NORMAL_COLOR);
         selectableTiles = map.AttackBFS(GetCurrentTile(), skill.range);
         HighlightTiles(selectableTiles, Tile.IN_RANGE_COLOR);
         isSelecting = true;

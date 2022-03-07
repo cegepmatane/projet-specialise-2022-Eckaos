@@ -19,26 +19,18 @@ public class Character : MonoBehaviour
         skillAction = new CharacterSkill(this);
     }
 
-    void Update()
+    public bool HasAttacked() => attackAction.HasExecuted() || skillAction.HasExecuted();
+
+    public void ResetActions()
     {
-        if(movementAction == null || skillAction == null || attackAction == null) return;
-        if(movementAction.IsSelecting())
-            movementAction.TileSelection();
-        else if(attackAction.IsSelecting())
-            attackAction.TileSelection();
-        else if(skillAction.IsSelecting())
-            skillAction.TileSelection();
-        else
-            TileMap.GetInstance().GetTile((int)transform.position.x, (int)transform.position.z).player = gameObject;
-        
-        if(movementAction.IsExecuting())
-            movementAction.Execute();
-        else if(attackAction.IsExecuting())
-            attackAction.Execute();
-        else if(skillAction.IsExecuting())
-            skillAction.Execute();
+        movementAction.Reset();
+        attackAction.Reset();
+        skillAction.Reset();
     }
 
+    public CharacterAction GetMovementAction() => movementAction;
+    public CharacterAction GetAttackAction() => attackAction;
+    public CharacterAction GetSkillAction() => skillAction;
 
     public void InMovingRangeSelectableTile() 
     {

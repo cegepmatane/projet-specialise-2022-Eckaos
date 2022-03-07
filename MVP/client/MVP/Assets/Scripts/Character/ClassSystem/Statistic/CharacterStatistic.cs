@@ -7,6 +7,8 @@ using System.Collections.ObjectModel;
 [Serializable]
 public class CharacterStatistic
 {
+    
+    [Range(1,99)]
     public int baseValue;
     public float value { get { return CalculateFinalValue(); } }
     private readonly List<StatisticModifier> statisticModifiers;

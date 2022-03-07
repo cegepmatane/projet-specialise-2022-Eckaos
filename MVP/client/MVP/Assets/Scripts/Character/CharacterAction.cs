@@ -10,20 +10,25 @@ public abstract class CharacterAction
     protected bool isExecuting;
     protected TileMap map;
 
+    protected bool hasExecuted;
+
     public CharacterAction(Character character)
     {
         this.character = character;
         this.map = TileMap.GetInstance();
+        hasExecuted = false;
     }
 
     public bool IsSelecting() => isSelecting;
     public bool IsExecuting() => isExecuting;
+    public bool HasExecuted() => hasExecuted;
+    public void Reset() => hasExecuted = false;
 
     public bool IsUsed() => isSelecting || isExecuting;
 
     public abstract void GetSelectableTiles();
     public abstract void Execute();
-    public void TileSelection()
+    public virtual void TileSelection()
     {
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         RaycastHit hit;
@@ -33,8 +38,6 @@ public abstract class CharacterAction
             Tile tileSelected = map.GetTile((int)targetPosition.x, (int)targetPosition.z);
             if(IsSelectedTileValid(tileSelected))
                 SetUpExecution(tileSelected);
-            else
-                HighlightTiles(selectableTiles, Tile.IN_RANGE_COLOR);
         }
     }
     protected abstract bool IsSelectedTileValid(Tile tile);
@@ -49,5 +52,5 @@ public abstract class CharacterAction
         tile.ground.GetComponent<Renderer>().material.color = color;
     }
 
-    protected Tile GetCurrentTile() => map.GetTile((int)character.transform.position.x, (int)character.transform.position.z);
+    public Tile GetCurrentTile() => map.GetTile((int)character.transform.position.x, (int)character.transform.position.z);
 }
