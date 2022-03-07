@@ -22,7 +22,6 @@ public class TurnManager : MonoBehaviour
         turnIndicator.UpdateIndicator(characters, character);
         if(turn < characters.Count-1)turn++;
         else turn = 0;
-        Debug.Log(character.classData.speed);
         return character;
     }
 

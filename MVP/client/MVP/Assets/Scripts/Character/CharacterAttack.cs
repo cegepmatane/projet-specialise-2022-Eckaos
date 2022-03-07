@@ -14,7 +14,6 @@ public class CharacterAttack : CharacterAction
     public override void GetSelectableTiles()
     {
         HighlightTiles(map.GetTileList(), Tile.NORMAL_COLOR);
-        Debug.Log(character);
         selectableTiles = map.AttackBFS(GetCurrentTile(), attackRange);
         HighlightTiles(selectableTiles, Tile.IN_RANGE_COLOR);
         isSelecting = true;

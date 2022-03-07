@@ -53,6 +53,7 @@ public class CharacterMovement : CharacterAction
 
     public override void TileSelection()
     {
+        if(hasExecuted || isExecuting) return;
         GetSelectableTiles();
         base.TileSelection();
     }
