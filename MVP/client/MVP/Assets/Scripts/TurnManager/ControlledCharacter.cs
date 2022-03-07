@@ -16,9 +16,7 @@ public class ControlledCharacter : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
-
-        if(currentCharacter == null || currentCharacter.HasAttacked())
+        if(currentCharacter == null)
             ChangeCurrentCharacter();
 
         if(attackAction.IsSelecting())
@@ -75,4 +73,5 @@ public class ControlledCharacter : MonoBehaviour
         (skillAction as CharacterSkill).skill = currentCharacter.classData.thirdSkill;
         InSkillRangeSelectableTile();
     }
+    public void NextTurn() => ChangeCurrentCharacter();
 }

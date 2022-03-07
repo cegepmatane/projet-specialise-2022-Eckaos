@@ -31,39 +31,4 @@ public class Character : MonoBehaviour
     public CharacterAction GetMovementAction() => movementAction;
     public CharacterAction GetAttackAction() => attackAction;
     public CharacterAction GetSkillAction() => skillAction;
-
-    public void InMovingRangeSelectableTile() 
-    {
-        if(!attackAction.IsUsed() && !skillAction.IsUsed())
-        movementAction.GetSelectableTiles();
-    }
-    public void InAttackRangeSelectableTile() 
-    {
-        if(!movementAction.IsUsed() && !skillAction.IsUsed())
-        attackAction.GetSelectableTiles();
-    }
-
-    private void InSkillRangeSelectableTile()
-    {
-        if(!movementAction.IsUsed() && !attackAction.IsUsed())
-        skillAction.GetSelectableTiles();
-    }
-
-    public void InSkill1RangeSelectableTile()
-    {
-        (skillAction as CharacterSkill).skill = classData.firstSkill;
-        InSkillRangeSelectableTile();
-    }
-
-    public void InSkill2RangeSelectableTile()
-    {
-        (skillAction as CharacterSkill).skill = classData.secondSkill;
-        InSkillRangeSelectableTile();
-    }
-
-    public void InSkill3RangeSelectableTile()
-    {
-        (skillAction as CharacterSkill).skill = classData.thirdSkill;
-        InSkillRangeSelectableTile();
-    }
 }

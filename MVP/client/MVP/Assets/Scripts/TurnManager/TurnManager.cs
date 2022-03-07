@@ -41,9 +41,4 @@ public class TurnManager : MonoBehaviour
         else return 0;
     }
 
-    public void TestTurn()
-    {
-        GetTurn();
-    }
-
 }
