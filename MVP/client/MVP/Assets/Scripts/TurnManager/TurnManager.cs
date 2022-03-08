@@ -10,7 +10,8 @@ public class TurnManager : MonoBehaviour
 
     public TurnIndicator turnIndicator;
 
-    private void Start() {
+
+    private void Awake() {
         characters = new List<Character>();
     }
 
