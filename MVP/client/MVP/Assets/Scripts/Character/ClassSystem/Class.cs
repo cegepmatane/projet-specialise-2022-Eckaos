@@ -6,23 +6,21 @@ public class Class : ScriptableObject
 {
     public string className;
 
-    [Range(1,10)]
-    public int movementPoint = 1;
     [Range(1,500)]
     public int lifePoints = 1;
     [Range(1,100)]
-    public int manaPoints = 1;
+    public int actionPoint;
+    [Range(1,10)]
+    public int movementPoint = 1;
 
     [Range(1,7)]
     public int attackRange = 1;
-    
+
     [Range(1, 100)]
     public int speed;
 
     public CharacterStatistic strength;
     public CharacterStatistic defense;
 
-    public Skill firstSkill;
-    public Skill secondSkill;
-    public Skill thirdSkill;
+    public Skill[] skills = new Skill[4];
 }

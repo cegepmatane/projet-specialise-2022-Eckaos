@@ -33,7 +33,12 @@ public class TileMap {
         return tileMap.Cast<Tile>().Where(tile => tile.ground.tag == Tile.GROUND_TAG).ToList();
     }
     public void SetTile(int x, int z, GameObject ground = null, GameObject player = null) => tileMap[x,z] = new Tile(x,z, ground, player);
-
+    
+    public void ResetHighlight() 
+    {
+        foreach(Tile tile in GetTileList())
+            tile.ground.GetComponent<Renderer>().material.color = Tile.NORMAL_COLOR;
+    }
     public List<Tile> MovingBFS(Tile root, int maxRange)
     {
         List<Tile> selectableTiles = new List<Tile>();

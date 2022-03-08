@@ -7,7 +7,7 @@ public class HealthRelatedSkill : Skill
     public int amount;
     public override void Execute(Character caster, Tile target)
     {
-        base.Execute(caster, target);
+        if(target == null) return;
         Character c = GetCharacterFromTile(target);
         if(c == null) return;
         c.classData.lifePoints += amount;

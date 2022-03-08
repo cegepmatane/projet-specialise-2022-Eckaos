@@ -3,34 +3,40 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 
-public class CharacterMovement : CharacterAction
+public class MovementAction : Action
 {
-    public int movementPoint;
     public float moveSpeed = 6;
     private Stack<Tile> path;
-    private Tile currentTile;
 
-    public CharacterMovement(Character character, int movementPoint = 5) : base(character)
+    private bool isExecuting;
+
+    public MovementAction(Character character) : base(character) {}
+
+    public override void Execute()
     {
-        this.movementPoint = movementPoint;
-        isSelecting = false;
+        base.Execute();
+        Move();
+    }
+
+    protected override void TileSelection()
+    {
+        GetSelectableTiles();
+        base.TileSelection();
     }
     public override void GetSelectableTiles()
     {
         if(path != null && path.Count>0) return;
-        currentTile = GetCurrentTile();
-        selectableTiles = map.MovingBFS(currentTile, movementPoint);
+        selectableTiles = map.MovingBFS(GetCurrentTile(), character.currentMovementPoint);
         HighlightTiles(selectableTiles, Color.green);
     }
 
-    public override void Execute()
+    private void Move()
     {
-        if(path == null || path.Count <= 0)
-        {
+        if(path == null || path.Count <= 0){
             isExecuting = false;
-            hasExecuted = true;
             return;
         }
+        GetCurrentTile().player = null;
         Tile tile = path.Peek();
         Vector3 target = tile.ground.transform.position;
         target.y += character.GetComponent<Collider>().bounds.extents.y + tile.ground.GetComponent<Collider>().bounds.extents.y;
@@ -44,18 +50,9 @@ public class CharacterMovement : CharacterAction
         }else
         {   
             character.transform.position = target;
-            currentTile.player = null;
-            currentTile = GetCurrentTile();
-            currentTile.player = character.gameObject;
+            GetCurrentTile().player = character.gameObject;
             path.Pop();
         }
-    }
-
-    public override void TileSelection()
-    {
-        if(hasExecuted || isExecuting) return;
-        GetSelectableTiles();
-        base.TileSelection();
     }
 
     protected override void SetUpExecution(Tile target){
@@ -69,14 +66,14 @@ public class CharacterMovement : CharacterAction
     void SetPath(Stack<Tile> tempPath)
     {
         path = tempPath;
+        character.currentMovementPoint -= path.Count();
         HighlightTiles(selectableTiles, Tile.NORMAL_COLOR);
         selectableTiles = null;
         isExecuting = true;
     }
 
-
-    protected override bool IsSelectedTileValid(Tile tile)
-    {
-        return selectableTiles != null && tile.IsWalkable() && selectableTiles.Contains(tile);
-    }
+    public override bool IsValidForUse() =>  character.currentMovementPoint >= 0;
+    public override bool IsExecuting() => isExecuting;
+    public override bool IsSelecting() => false;
+    protected override bool IsSelectedTileValid(Tile tile) => selectableTiles != null && tile.IsWalkable() && selectableTiles.Contains(tile);
 }

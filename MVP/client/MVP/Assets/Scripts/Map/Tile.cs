@@ -25,7 +25,14 @@ public class Tile
 
     public bool IsWalkable() => IsGround() && player == null;
     public bool IsGround() => ground.tag == GROUND_TAG;
+
+    public override bool Equals(object obj)
+    {
+        if (obj == null || GetType() != obj.GetType())  return false;
+        Tile tile2 = obj as Tile;
+        return this.x == tile2.x && this.z == tile2.z && this.ground == tile2.ground && this.player == tile2.player;
+    }
     
-    public static bool operator ==(Tile tile, Tile tile2) => !(tile is null) && !(tile2 is null) && tile.x == tile2.x && tile.z == tile2.z && tile.ground == tile2.ground && tile.player == tile2.player;
-    public static bool operator !=(Tile tile, Tile tile2) => tile is null || tile2 is null || tile.x != tile2.x || tile.z != tile2.z || tile.ground != tile2.ground || tile.player != tile2.player;
+    public override int GetHashCode() => base.GetHashCode();
+
 }

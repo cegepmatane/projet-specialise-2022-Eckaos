@@ -6,72 +6,43 @@ public class ControlledCharacter : MonoBehaviour
 {
     private Character currentCharacter;
     public TurnManager turnManager;
+    private Action actionToUse;
 
-    private CharacterAction attackAction;
-    private CharacterAction movementAction;
-    private CharacterAction skillAction;
-
+    public ActionPanel actionPanel;
 
 
     // Update is called once per frame
+    private void Start() {
+        ChangeCurrentCharacter();
+    }
+
     void Update()
     {
-        if(currentCharacter == null)
-            ChangeCurrentCharacter();
-
-        if(attackAction.IsSelecting())
-            attackAction.TileSelection();
-        else if(skillAction.IsSelecting())
-            skillAction.TileSelection();
-        else if(!movementAction.HasExecuted())
-            movementAction.TileSelection();
-
-        if(movementAction.IsExecuting())
-            movementAction.Execute();
-        else if(attackAction.IsExecuting())
-            attackAction.Execute();
-        else if(skillAction.IsExecuting())
-            skillAction.Execute();
+        if(currentCharacter.currentActionPoint <= 0 && currentCharacter.currentMovementPoint <= 0) return;
+        actionToUse = GetActionToUse();
+        if(actionToUse == null) return;
+        actionToUse.Execute();
     }
 
     private void ChangeCurrentCharacter()
     {
-
-        if(currentCharacter != null)currentCharacter.ResetActions();
+        TileMap.GetInstance().ResetHighlight();
+        if(currentCharacter != null)currentCharacter.Reset();
         currentCharacter = turnManager.GetTurn();
-        attackAction = currentCharacter.GetAttackAction();
-        movementAction = currentCharacter.GetMovementAction();
-        skillAction = currentCharacter.GetSkillAction();
+        actionPanel.ActivatePanel(GetActions());
     }
 
-    public void InAttackRangeSelectableTile()
+    public Action GetActionToUse()
     {
-        if(!movementAction.IsUsed() && !skillAction.IsUsed())
-        attackAction.GetSelectableTiles();
+        foreach (Action action in currentCharacter.skillActions)
+            if(action.IsSelecting() && !currentCharacter.movementAction.IsExecuting())
+                return action;  
+        if(currentCharacter.movementAction.IsValidForUse())
+            return currentCharacter.movementAction;
+        return null;
     }
 
-    private void InSkillRangeSelectableTile()
-    {
-        if(!movementAction.IsUsed() && !attackAction.IsUsed())
-        skillAction.GetSelectableTiles();
-    }
-
-    public void InSkill1RangeSelectableTile()
-    {
-        (skillAction as CharacterSkill).skill = currentCharacter.classData.firstSkill;
-        InSkillRangeSelectableTile();
-    }
-
-    public void InSkill2RangeSelectableTile()
-    {
-        (skillAction as CharacterSkill).skill = currentCharacter.classData.secondSkill;
-        InSkillRangeSelectableTile();
-    }
-
-    public void InSkill3RangeSelectableTile()
-    {
-        (skillAction as CharacterSkill).skill = currentCharacter.classData.thirdSkill;
-        InSkillRangeSelectableTile();
-    }
+    public bool isExecutingAction() => actionToUse.IsExecuting();
     public void NextTurn() => ChangeCurrentCharacter();
+    public List<Action> GetActions() => currentCharacter.skillActions;
 }

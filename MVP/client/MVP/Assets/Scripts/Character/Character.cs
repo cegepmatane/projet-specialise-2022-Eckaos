@@ -4,31 +4,32 @@ using UnityEngine;
 
 public class Character : MonoBehaviour
 {
-
-    private CharacterAction attackAction;
-    private CharacterAction movementAction;
-    private CharacterAction skillAction;
+    public Action movementAction;
+    public List<Action> skillActions;
     public Class classData;
 
-    private void Start() {
-        TileMap.GetInstance().GetTile((int)transform.position.x, (int)transform.position.z).player = gameObject;
+    public int currentActionPoint;
+    public int currentMovementPoint;
+
+    private void Awake() {
         var classAssets = Resources.LoadAll<Class>("Class");
         classData = classAssets.GetValue(Random.Range(0, classAssets.Length)) as Class;
-        attackAction = new CharacterAttack(this, classData.attackRange);
-        movementAction = new CharacterMovement(this, classData.movementPoint);
-        skillAction = new CharacterSkill(this);
+        Reset();
+        movementAction = new MovementAction(this);
+        skillActions = new List<Action>();
+        foreach (Skill skill in classData.skills)
+            skillActions.Add(new SkillAction(this, skill));
+    }
+    private void Start() {
+        TileMap.GetInstance().GetTile((int)transform.position.x, (int)transform.position.z).player = gameObject;
     }
 
-    public bool HasAttacked() => attackAction.HasExecuted() || skillAction.HasExecuted();
-
-    public void ResetActions()
+    public void Reset()
     {
-        movementAction.Reset();
-        attackAction.Reset();
-        skillAction.Reset();
+        currentActionPoint = classData.actionPoint;
+        currentMovementPoint = classData.movementPoint;
     }
-
-    public CharacterAction GetMovementAction() => movementAction;
-    public CharacterAction GetAttackAction() => attackAction;
-    public CharacterAction GetSkillAction() => skillAction;
+    
+    public Action GetAction(int i) => skillActions[i];
+    public Tile GetCurrentTile() => TileMap.GetInstance().GetTile((int)transform.position.x, (int)transform.position.z);
 }

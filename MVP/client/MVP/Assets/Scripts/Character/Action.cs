@@ -2,33 +2,23 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public abstract class CharacterAction
+public abstract class Action
 {
     protected Character character;
     protected List<Tile> selectableTiles;
-    protected bool isSelecting;
-    protected bool isExecuting;
     protected TileMap map;
 
-    protected bool hasExecuted;
-
-    public CharacterAction(Character character)
+    public Action(Character character)
     {
         this.character = character;
         this.map = TileMap.GetInstance();
-        hasExecuted = false;
     }
-
-    public bool IsSelecting() => isSelecting;
-    public bool IsExecuting() => isExecuting;
-    public bool HasExecuted() => hasExecuted;
-    public void Reset() => hasExecuted = false;
-
-    public bool IsUsed() => isSelecting || isExecuting;
-
+    public abstract bool IsValidForUse();
+    public abstract bool IsExecuting();
+    public abstract bool IsSelecting();
     public abstract void GetSelectableTiles();
-    public abstract void Execute();
-    public virtual void TileSelection()
+    public virtual void Execute() => TileSelection();
+    protected virtual void TileSelection()
     {
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         RaycastHit hit;

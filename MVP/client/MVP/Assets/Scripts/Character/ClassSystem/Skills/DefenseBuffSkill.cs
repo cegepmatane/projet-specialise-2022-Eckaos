@@ -7,7 +7,6 @@ public class DefenseBuffSkill : BuffRelatedSkill
 {
     public override void Execute(Character caster, Tile target)
     {
-        base.Execute(caster, target);
         Character c = GetCharacterFromTile(target);
         if(c == null) return;
         c.classData.defense.AddModifier(this.CreateModifier());
