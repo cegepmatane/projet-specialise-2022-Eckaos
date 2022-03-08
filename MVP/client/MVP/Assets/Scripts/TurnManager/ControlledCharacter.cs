@@ -28,7 +28,7 @@ public class ControlledCharacter : MonoBehaviour
     {
         TileMap.GetInstance().ResetHighlight();
         if(currentCharacter != null)currentCharacter.Reset();
-        currentCharacter = turnManager.GetTurn();
+        currentCharacter = turnManager.GetNextTurn();
         actionPanel.ActivatePanel(GetActions());
     }
 

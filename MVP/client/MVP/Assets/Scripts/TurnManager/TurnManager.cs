@@ -8,29 +8,26 @@ public class TurnManager : MonoBehaviour
 
     private int turn = 0;
 
-    public TurnIndicator turnIndicator;
+    public TurnIndicatorList turnIndicators;
 
-
-    private void Awake() {
-        characters = new List<Character>();
-    }
-
-    public Character GetTurn()
+    public Character GetNextTurn()
     {
-        var characterList = GameObject.FindGameObjectsWithTag("Character");
-        if(characters.Count != characterList.Length)CreateTurnList(characterList);
+        if(characters == null || characters.Any(character => character.currentLifePoints <= 0))CreateTurnList();
         Character character = characters[turn];
-        turnIndicator.UpdateIndicator(characters, character);
+        turnIndicators.UpdateIndicator(characters, character);
         if(turn < characters.Count-1)turn++;
         else turn = 0;
         return character;
     }
 
-    public void CreateTurnList(GameObject[] characterList)
+    public bool IsNextTurnSameAsLastTurn() => characters.Count == GameObject.FindGameObjectsWithTag("Character").Length;
+
+    public void CreateTurnList()
     {
-        characters.Clear();
-        characters = characterList.Select(charObj => charObj.GetComponent<Character>()).ToList();
+        characters = new List<Character>();
+        characters = GameObject.FindGameObjectsWithTag("Character").Select(charObj => charObj.GetComponent<Character>()).ToList();
         characters.Sort(SortBySpeed);
+        if(characters.Count <= 0) return;//TODO QUITTER;
     }
 
 
