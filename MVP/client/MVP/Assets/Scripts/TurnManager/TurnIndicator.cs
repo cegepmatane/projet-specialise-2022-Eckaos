@@ -2,7 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using System.Linq;
 
 public class TurnIndicator : MonoBehaviour
 {
@@ -39,6 +38,13 @@ public class TurnIndicator : MonoBehaviour
     {   
         Image image = CreateImage();
         RectTransform pos = image.GetComponent<RectTransform>();
+        GameObject cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        cube.layer = 5;
+        cube.transform.localScale = new Vector3(30,30,30);
+        cube.transform.localPosition = new Vector3(0,0,-200);
+        cube.transform.rotation = Quaternion.Euler(-15,45,-15);
+        cube.GetComponent<Renderer>().material.color = Color.red;
+        cube.transform.SetParent(pos);
         pos.SetParent(turnIndicatorPosition);
         SetUpImage(pos);
         pos.ForceUpdateRectTransforms();
