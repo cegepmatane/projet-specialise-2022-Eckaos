@@ -8,7 +8,7 @@ using System.Collections.ObjectModel;
 public class CharacterStatistic
 {
     
-    [Range(1,99)]
+    [Range(1,100)]
     public int baseValue;
     public float value { get { return CalculateFinalValue(); } }
     private readonly List<StatisticModifier> statisticModifiers;

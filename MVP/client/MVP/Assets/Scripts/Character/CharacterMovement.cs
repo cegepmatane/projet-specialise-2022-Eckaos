@@ -20,7 +20,7 @@ public class CharacterMovement : CharacterAction
         if(path != null && path.Count>0) return;
         currentTile = GetCurrentTile();
         selectableTiles = map.MovingBFS(currentTile, movementPoint);
-        //HighlightTiles(selectableTiles, Tile.IN_RANGE_COLOR);
+        HighlightTiles(selectableTiles, Color.green);
     }
 
     public override void Execute()
@@ -60,8 +60,8 @@ public class CharacterMovement : CharacterAction
 
     protected override void SetUpExecution(Tile target){
         Stack<Tile> tempPath = map.AStarSearch(GetCurrentTile(), target);
-        HighlightTiles(selectableTiles, Tile.NORMAL_COLOR);
-        HighlightTiles(tempPath, Tile.PATH_COLOR);
+        HighlightTiles(selectableTiles, Color.green);
+        HighlightTiles(tempPath, Color.grey);
         if(Input.GetMouseButtonUp(0))
             SetPath(tempPath);
     }

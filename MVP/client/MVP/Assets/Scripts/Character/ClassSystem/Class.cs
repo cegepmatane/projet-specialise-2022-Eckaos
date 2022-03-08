@@ -1,13 +1,20 @@
 using UnityEngine;
+using System.Collections.Generic;
 
 [CreateAssetMenu(fileName ="ClassSystem/Class", order = 1)]
 public class Class : ScriptableObject
 {
     public string className;
-    public int movementPoint;
-    public int lifePoints;
-    public int manaPoints;
-    public int attackRange;
+
+    [Range(1,10)]
+    public int movementPoint = 1;
+    [Range(1,500)]
+    public int lifePoints = 1;
+    [Range(1,100)]
+    public int manaPoints = 1;
+
+    [Range(1,7)]
+    public int attackRange = 1;
     
     [Range(1, 100)]
     public int speed;
