@@ -6430,6 +6430,7 @@ MonoBehaviour:
   classData: {fileID: 0}
   currentActionPoint: 0
   currentMovementPoint: 0
+  currentLifePoints: 0
 --- !u!65 &586585817
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -6462,7 +6463,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 3967f80875ae6a744bf754990b888d2c, type: 2}
+  - {fileID: 2100000, guid: dccfe860d03f2354796f26bb4453aaf2, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -7222,10 +7223,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 649364406}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 38e598b6ba8828642b6c46de92371316, type: 3}
+  m_Script: {fileID: 11500000, guid: 4092729421bcb3e45b2f23d3664655b9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  turnIndicatorPosition: {fileID: 649364410}
+  turnIndicatorListPosition: {fileID: 649364410}
 --- !u!114 &649364408
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -12262,7 +12263,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14cca4ff99c2f5841b6aaa827ef5f61c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  turnIndicator: {fileID: 649364407}
+  turnIndicators: {fileID: 649364407}
 --- !u!1001 &1286779869
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -13383,6 +13384,7 @@ MonoBehaviour:
   classData: {fileID: 0}
   currentActionPoint: 0
   currentMovementPoint: 0
+  currentLifePoints: 0
 --- !u!1 &1390694369
 GameObject:
   m_ObjectHideFlags: 0

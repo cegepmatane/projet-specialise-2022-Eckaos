@@ -18,6 +18,7 @@ public class ControlledCharacter : MonoBehaviour
 
     void Update()
     {
+        if(!turnManager.IsNextTurnSameAsLastTurn()) turnManager.CreateTurnList();
         if(currentCharacter.currentActionPoint <= 0 && currentCharacter.currentMovementPoint <= 0) return;
         actionToUse = GetActionToUse();
         if(actionToUse == null) return;
@@ -34,6 +35,7 @@ public class ControlledCharacter : MonoBehaviour
 
     public Action GetActionToUse()
     {
+        if(currentCharacter == null) return null;
         foreach (Action action in currentCharacter.skillActions)
             if(action.IsSelecting() && !currentCharacter.movementAction.IsExecuting())
                 return action;  

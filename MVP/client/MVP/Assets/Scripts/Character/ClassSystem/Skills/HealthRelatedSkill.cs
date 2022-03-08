@@ -10,6 +10,6 @@ public class HealthRelatedSkill : Skill
         if(target == null) return;
         Character c = GetCharacterFromTile(target);
         if(c == null) return;
-        c.classData.lifePoints += amount;
+        c.TakeLifePoints(amount);
     }
 }

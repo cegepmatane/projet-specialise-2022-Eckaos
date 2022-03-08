@@ -11,9 +11,12 @@ public class Character : MonoBehaviour
     public int currentActionPoint;
     public int currentMovementPoint;
 
+    public int currentLifePoints;
+
     private void Awake() {
         var classAssets = Resources.LoadAll<Class>("Class");
         classData = classAssets.GetValue(Random.Range(0, classAssets.Length)) as Class;
+        currentLifePoints = classData.lifePoints;
         Reset();
         movementAction = new MovementAction(this);
         skillActions = new List<Action>();
@@ -32,4 +35,11 @@ public class Character : MonoBehaviour
     
     public Action GetAction(int i) => skillActions[i];
     public Tile GetCurrentTile() => TileMap.GetInstance().GetTile((int)transform.position.x, (int)transform.position.z);
+
+    public void TakeLifePoints(int amount)
+    {
+        if(amount >=0) currentLifePoints += amount;
+        else currentLifePoints += (int) (amount/classData.defense.value);
+        if(currentLifePoints <= 0) DestroyImmediate(gameObject);
+    }
 }

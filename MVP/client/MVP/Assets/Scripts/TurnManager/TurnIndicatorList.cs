@@ -33,7 +33,7 @@ public class TurnIndicatorList : MonoBehaviour
     {
         if(indicators != null)
             foreach (TurnIndicator turnIndicator in indicators)
-                DestroyImmediate(turnIndicator.panel);
+                DestroyImmediate(turnIndicator.panel.gameObject);
     }
     
 }

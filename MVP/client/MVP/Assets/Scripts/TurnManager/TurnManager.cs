@@ -5,6 +5,7 @@ using UnityEngine;
 public class TurnManager : MonoBehaviour
 {
     private List<Character> characters;
+    private Character character;
 
     private int turn = 0;
 
@@ -12,8 +13,8 @@ public class TurnManager : MonoBehaviour
 
     public Character GetNextTurn()
     {
-        if(characters == null || characters.Any(character => character.currentLifePoints <= 0))CreateTurnList();
-        Character character = characters[turn];
+        if(characters == null)CreateTurnList();
+        character = characters[turn];
         turnIndicators.UpdateIndicator(characters, character);
         if(turn < characters.Count-1)turn++;
         else turn = 0;
@@ -24,9 +25,11 @@ public class TurnManager : MonoBehaviour
 
     public void CreateTurnList()
     {
-        characters = new List<Character>();
         characters = GameObject.FindGameObjectsWithTag("Character").Select(charObj => charObj.GetComponent<Character>()).ToList();
+        if(character != null) turn = characters.IndexOf(character);
+        Debug.Log(turn);
         characters.Sort(SortBySpeed);
+        turnIndicators.UpdateIndicator(characters, characters[turn]);
         if(characters.Count <= 0) return;//TODO QUITTER;
     }
 
