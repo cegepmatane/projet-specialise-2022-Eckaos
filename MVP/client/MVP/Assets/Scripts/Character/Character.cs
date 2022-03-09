@@ -1,11 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 public class Character : MonoBehaviour
 {
     public Action movementAction;
-    public List<Action> skillActions;
+    public List<SkillAction> skillActions;
     public Class classData;
 
     public int currentActionPoint;
@@ -19,9 +20,7 @@ public class Character : MonoBehaviour
         currentLifePoints = classData.lifePoints;
         Reset();
         movementAction = new MovementAction(this);
-        skillActions = new List<Action>();
-        foreach (Skill skill in classData.skills)
-            skillActions.Add(new SkillAction(this, skill));
+        skillActions = classData.skills.Select(skill => new SkillAction(this, skill)).ToList<SkillAction>();
     }
     private void Start() {
         TileMap.GetInstance().GetTile((int)transform.position.x, (int)transform.position.z).player = gameObject;

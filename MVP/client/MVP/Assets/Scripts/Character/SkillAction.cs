@@ -5,7 +5,6 @@ public class SkillAction : Action
 {
     private Tile tileToAttack;
     private Skill skill;
-
     private bool isSelecting;
     private bool isExecuting;
     public SkillAction(Character character, Skill skill) : base(character)
@@ -34,8 +33,11 @@ public class SkillAction : Action
             selectableTiles = null;
             skill.Execute(character, tileToAttack);
             character.currentActionPoint -= skill.actionPointNeeded;
+            isSelecting = false;
         }
     }
+
+    public Skill GetSkill() => skill;
     public override bool IsValidForUse() => character.currentActionPoint > 0 && character.currentActionPoint >= skill.actionPointNeeded;
     public override bool IsExecuting() => false;
     public override bool IsSelecting() => isSelecting;

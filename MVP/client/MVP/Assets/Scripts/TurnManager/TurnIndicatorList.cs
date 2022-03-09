@@ -8,10 +8,12 @@ public class TurnIndicatorList : MonoBehaviour
 {
     private static float offset = -70;
     public RectTransform turnIndicatorListPosition;
+    private float xPosition =-Mathf.Infinity;
     private List<TurnIndicator> indicators;
 
     public void UpdateIndicator(List<Character> characters, Character character)
     {
+        if(xPosition == -Mathf.Infinity) xPosition = turnIndicatorListPosition.localPosition.x;
         if(indicators == null || characters.Count != indicators.Count)
             UpdateIndicator(characters);
         indicators.ForEach(indicator => indicator.panel.color = Color.white);
@@ -25,7 +27,7 @@ public class TurnIndicatorList : MonoBehaviour
         turnIndicatorListPosition.sizeDelta = new Vector2(characters.Count * TurnIndicator.size.x + (characters.Count+1) * 10 ,turnIndicatorListPosition.sizeDelta.y);
         for (int i = 0; i < characters.Count ; i++)
             indicators.Add(new TurnIndicator(turnIndicatorListPosition,characters[i], -40+(characters.Count-1-i)*offset));
-        
+        turnIndicatorListPosition.localPosition = new Vector3(xPosition+((200-turnIndicatorListPosition.sizeDelta.x)/2), -250, 0);
         turnIndicatorListPosition.ForceUpdateRectTransforms();
     }
 

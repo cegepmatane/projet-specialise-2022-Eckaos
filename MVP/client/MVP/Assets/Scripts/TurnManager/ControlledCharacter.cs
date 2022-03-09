@@ -9,6 +9,9 @@ public class ControlledCharacter : MonoBehaviour
     private Action actionToUse;
 
     public ActionPanel actionPanel;
+    public HealthBar healthBar;
+    public ActionPointIndicator actionPointIndicator;
+    public MovementPointIndicator movementPointIndicator;
 
 
     // Update is called once per frame
@@ -18,11 +21,14 @@ public class ControlledCharacter : MonoBehaviour
 
     void Update()
     {
+        movementPointIndicator.text.text = currentCharacter.currentMovementPoint+"";
+        actionPointIndicator.text.text = currentCharacter.currentActionPoint+"";
         if(!turnManager.IsNextTurnSameAsLastTurn()) turnManager.CreateTurnList();
         if(currentCharacter.currentActionPoint <= 0 && currentCharacter.currentMovementPoint <= 0) return;
         actionToUse = GetActionToUse();
         if(actionToUse == null) return;
         actionToUse.Execute();
+        
     }
 
     private void ChangeCurrentCharacter()
@@ -31,6 +37,10 @@ public class ControlledCharacter : MonoBehaviour
         if(currentCharacter != null)currentCharacter.Reset();
         currentCharacter = turnManager.GetNextTurn();
         actionPanel.ActivatePanel(GetActions());
+        healthBar.slider.maxValue = currentCharacter.classData.lifePoints;
+        healthBar.SetHealth(currentCharacter.currentLifePoints);
+        movementPointIndicator.text.text = currentCharacter.currentMovementPoint+"";
+        actionPointIndicator.text.text = currentCharacter.currentActionPoint+"";
     }
 
     public Action GetActionToUse()
@@ -38,13 +48,14 @@ public class ControlledCharacter : MonoBehaviour
         if(currentCharacter == null) return null;
         foreach (Action action in currentCharacter.skillActions)
             if(action.IsSelecting() && !currentCharacter.movementAction.IsExecuting())
-                return action;  
+                return action; 
         if(currentCharacter.movementAction.IsValidForUse())
             return currentCharacter.movementAction;
         return null;
     }
 
+    public Character GetCurrentCharacter() => currentCharacter;
     public bool isExecutingAction() => actionToUse.IsExecuting();
     public void NextTurn() => ChangeCurrentCharacter();
-    public List<Action> GetActions() => currentCharacter.skillActions;
+    public List<SkillAction> GetActions() => currentCharacter.skillActions;
 }

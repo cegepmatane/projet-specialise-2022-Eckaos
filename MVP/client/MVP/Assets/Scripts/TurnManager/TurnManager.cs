@@ -27,7 +27,6 @@ public class TurnManager : MonoBehaviour
     {
         characters = GameObject.FindGameObjectsWithTag("Character").Select(charObj => charObj.GetComponent<Character>()).ToList();
         if(character != null) turn = characters.IndexOf(character);
-        Debug.Log(turn);
         characters.Sort(SortBySpeed);
         turnIndicators.UpdateIndicator(characters, characters[turn]);
         if(characters.Count <= 0) return;//TODO QUITTER;

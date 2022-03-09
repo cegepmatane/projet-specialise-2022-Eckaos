@@ -5,7 +5,7 @@ using UnityEngine;
 public class ActionPanel : MonoBehaviour
 {
     private ActionSlot[] slots;
-    public void ActivatePanel(List<Action> actions)
+    public void ActivatePanel(List<SkillAction> actions)
     {
         slots = GetComponentsInChildren<ActionSlot>();
         for (int i = 0; i < slots.Length; i++)
