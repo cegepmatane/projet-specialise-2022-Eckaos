@@ -19,4 +19,9 @@ public class GameClient : MonoBehaviour
     private void OnApplicationQuit() {
         if(room != null) room.Leave();
     }
+
+    public async void SendHello()
+    {
+        await gameClient.room.Send("action", new {message= "hello"});
+    }
 }

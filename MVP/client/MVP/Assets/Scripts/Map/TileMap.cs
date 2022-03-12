@@ -1,42 +1,36 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
+using System;
 public class TileMap {
-    
-    private static TileMap map;
-    
     private Tile[,] tileMap;
     private int xSize = 10;
     private int zSize = 10;
     private List<Vector3> directions = new List<Vector3>{Vector3.forward, Vector3.back, Vector3.right, Vector3.left};
 
-    private TileMap(int xSize, int zSize)
+    public TileMap(int xSize, int zSize)
     {
         tileMap = new Tile[xSize, zSize];
         this.xSize = xSize;
         this.zSize = zSize;
     }
 
-    public static TileMap GetInstance(int xSize = 10, int zSize = 10)
-    {
-        if(map == null) map = new TileMap(xSize, zSize);
-        return map;
-    }
-
     public Tile GetTile(int x, int z){
         if(!IsValid(x, z)) return null;
         return tileMap[x,z];
-    } 
-
-    public List<Tile> GetTileList()
-    {
-        return tileMap.Cast<Tile>().Where(tile => tile.ground.tag == Tile.GROUND_TAG).ToList();
     }
-    public void SetTile(int x, int z, GameObject ground = null, GameObject player = null) => tileMap[x,z] = new Tile(x,z, ground, player);
+
+    public List<Tile> GetGroundTileList() =>  tileMap.Cast<Tile>().Where(tile => tile.ground.tag == Tile.GROUND_TAG).ToList();
+
+    public List<(int x, int z)> GetCharactersPosition() => tileMap.Cast<Tile>().Where(tile => tile.player != null).Select(tile => (tile.x, tile.z)).ToList();
+    public GameObject GetCharacter(int x, int z) => tileMap[x, z].player;
+    //public void SetTile(int x, int z, GameObject ground = null, GameObject player = null) => tileMap[x,z] = new Tile(x,z, ground, player);
+    public void SetGround(int x, int z, GameObject ground) => tileMap[x,z] = new Tile(x,z, ground, null);
+    public void SetCharacter(int x, int z, GameObject player) => tileMap[x,z].player = player;
     
     public void ResetHighlight() 
     {
-        foreach(Tile tile in GetTileList())
+        foreach(Tile tile in GetGroundTileList())
             tile.ground.GetComponent<Renderer>().material.color = Tile.NORMAL_COLOR;
     }
     public List<Tile> MovingBFS(Tile root, int maxRange)

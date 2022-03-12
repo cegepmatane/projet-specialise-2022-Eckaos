@@ -1,0 +1,25 @@
+{
+    "name": "States",
+    "rootNamespace": "",
+    "references": [
+        "GUID:7d8788162c0190c4c8b801543ada1607",
+        "GUID:c6c9491dac62d634292c6a92016fc41f",
+        "GUID:e4ede8b8c05abde4ba98c937a67eba7c",
+        "GUID:8e474d0ac28889a4ca0b8551a78a8e39"
+    ],
+    "includePlatforms": [
+        "Editor",
+        "LinuxStandalone64",
+        "WSA",
+        "WindowsStandalone32",
+        "WindowsStandalone64"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

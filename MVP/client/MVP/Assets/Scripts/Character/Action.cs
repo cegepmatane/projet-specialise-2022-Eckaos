@@ -2,23 +2,16 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public abstract class Action
+public abstract class Action : MonoBehaviour
 {
-    protected Character character;
     protected List<Tile> selectableTiles;
     protected TileMap map;
-
-    public Action(Character character)
-    {
-        this.character = character;
-        this.map = TileMap.GetInstance();
-    }
-    public abstract bool IsValidForUse();
-    public abstract bool IsExecuting();
-    public abstract bool IsSelecting();
+    protected IGameClient client;
+    
+    public void SetTileMap(TileMap tileMap) => map = tileMap; 
+    public void SetGameClient(IGameClient gameClient) => client = gameClient;
     public abstract void GetSelectableTiles();
-    public virtual void Execute() => TileSelection();
-    protected virtual void TileSelection()
+    public virtual void Execute()
     {
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         RaycastHit hit;
@@ -41,6 +34,5 @@ public abstract class Action
     {
         tile.ground.GetComponent<Renderer>().material.color = color;
     }
-
-    public Tile GetCurrentTile() => map.GetTile((int)character.transform.position.x, (int)character.transform.position.z);
+    public Tile GetCurrentTile() => map.GetTile((int)transform.position.x, (int)transform.position.z);
 }

@@ -9,8 +9,8 @@ public class SendHelloButton : MonoBehaviour
     void Start()
     {
         Button test = deconnexionButton.GetComponent<Button>();
-        test.onClick.AddListener(sendHello);
         gameClient = findGameClient();
+        test.onClick.AddListener(gameClient.SendHello);
     }
 
     private GameClient findGameClient(){

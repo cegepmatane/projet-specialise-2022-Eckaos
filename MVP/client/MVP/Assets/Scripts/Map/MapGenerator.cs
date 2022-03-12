@@ -1,29 +1,13 @@
-using System.Collections.Generic;
 using UnityEngine;
 
 public class MapGenerator : MonoBehaviour
 {
-    // Start is called before the first frame update
-    private bool[,] walls;
     public Material tileMaterial;
     private TileMap tileMap;
-    public int xSize = 5;
-    public int zSize = 5;
-    private int numberOfWalls;
+    public int xSize;
+    public int zSize;
     private GameObject[,] tiles;
     public const string MAP_TAG = "Map";
-
-    void Awake()
-    {
-        GenerateMap();
-    }
-
-    public void GenerateMap()
-    {
-        DeleteMap();
-        GenerateWallPositions();
-        GenerateShape();
-    }
 
     public void DeleteMap()
     {
@@ -33,46 +17,11 @@ public class MapGenerator : MonoBehaviour
         }
     }
 
-    void GenerateWallPositions()
-    {
-        int min = (int) Mathf.Log(xSize*zSize, 2);
-        int max = xSize <= zSize ? xSize : zSize;
-        numberOfWalls = Random.Range(min, max);
-        InitWalls();
-        for (int i = 0; i < numberOfWalls; i++)
-        {
-            GenerateWall();
-        }
-    }
-
-    void GenerateWall()
-    {
-        int x, z;
-        do
-        {
-            x = Random.Range(0,xSize);
-            z = Random.Range(0,zSize);
-        } while (walls[x, z]);
-        walls[x, z] = true;
-    }
-
-    void InitWalls()
-    {
-        walls = new bool[xSize, zSize];
-        for (int x = 0; x < xSize; x++)
-        {
-            for (int z = 0; z < zSize; z++)
-            {
-                walls[x, z] = false;
-            }
-        }
-    }
-
-    void GenerateShape()
+    void GenerateShape(bool[,] walls)
     {
         GameObject map = new GameObject(MAP_TAG);
         map.tag = MAP_TAG;
-        tileMap = TileMap.GetInstance(xSize, zSize);
+        tileMap = new TileMap(xSize, zSize);
         for (int x = 0; x < xSize; x++)
         {
             GameObject row = new GameObject("Row"+x);
@@ -88,9 +37,18 @@ public class MapGenerator : MonoBehaviour
                 tile.transform.SetParent(row.transform);
                 Renderer tileRenderer = tile.GetComponent<Renderer>();
                 tileRenderer.material = GenerateMaterial(tile);
-                tileMap.SetTile(x,z, tile);
+                tileMap.SetGround(x,z, tile);
             }
         }
+    }
+
+    public TileMap GenerateMap(bool[,] walls)
+    {
+        DeleteMap();
+        xSize = walls.GetLength(0);
+        zSize = walls.GetLength(1);
+        GenerateShape(walls);
+        return tileMap;
     }
 
     Material GenerateMaterial(GameObject tile)

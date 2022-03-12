@@ -1,31 +1,43 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
-using UnityEngine.Events;
 public class ActionSlot : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
     private SkillAction action;
+    private Skill skill;
     private Image image;
-
     public Text skillNameText;
     public Text skillDescriptionText;
 
-    public void AddAction(SkillAction action)
+    public void AddAction(SkillAction action, Skill skill)
     {
         this.action = action;
-        skillDescriptionText.transform.parent.gameObject.SetActive(false);
-        GetComponentInChildren<Text>().text = action.GetSkill().skillName.ToUpper()[0].ToString();
+        this.skill = skill;
+        GetComponentInChildren<Text>().text = skill.skillName.ToUpper()[0].ToString();
     }
     
-    public void GetSelectableTiles() => this.action.GetSelectableTiles();
-    
+    public void Trigger()
+    {
+        if(action.IsSelecting()) Deactivate();
+        else Activate();
+    }
+
+    private void Activate()
+    {
+        this.action.SetSkill(this.skill);
+        this.action.GetSelectableTiles();
+    }
+
+    private void Deactivate() 
+    {
+        action.ResetHighlight();
+        action.Selecting(false);
+    }
     public void OnPointerEnter(PointerEventData p)
     {
         skillDescriptionText.transform.parent.gameObject.SetActive(true);
-        skillDescriptionText.text = action.GetSkill().description;
-        skillNameText.text = action.GetSkill().skillName;
+        skillDescriptionText.text = skill.description;
+        skillNameText.text = skill.skillName;
     }
 
     public void  OnPointerExit(PointerEventData p)

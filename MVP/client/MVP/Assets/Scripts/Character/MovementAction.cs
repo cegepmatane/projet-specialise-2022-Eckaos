@@ -5,53 +5,51 @@ using System.Linq;
 
 public class MovementAction : Action
 {
-    public float moveSpeed = 6;
+    public float moveSpeed = 2f;
+    private Character character;
     private Stack<Tile> path;
+    private CharacterMessage message;
 
-    private bool isExecuting;
-
-    public MovementAction(Character character) : base(character) {}
-
-    public override void Execute()
-    {
-        base.Execute();
-        Move();
+    protected void Start() {
+        character = GetComponent<Character>();
     }
 
-    protected override void TileSelection()
+    public void GetSelectableTiles(bool canSelect)
     {
+        if(!canSelect || IsExecuting() ) return;
         GetSelectableTiles();
-        base.TileSelection();
     }
     public override void GetSelectableTiles()
     {
-        if(path != null && path.Count>0) return;
+        map.ResetHighlight();
         selectableTiles = map.MovingBFS(GetCurrentTile(), character.currentMovementPoint);
         HighlightTiles(selectableTiles, Color.green);
+        Execute();
     }
 
-    private void Move()
+
+    private IEnumerator Move(Stack<Tile> path)
     {
-        if(path == null || path.Count <= 0){
-            isExecuting = false;
-            return;
-        }
-        GetCurrentTile().player = null;
-        Tile tile = path.Peek();
-        Vector3 target = tile.ground.transform.position;
-        target.y += character.GetComponent<Collider>().bounds.extents.y + tile.ground.GetComponent<Collider>().bounds.extents.y;
-        if(Vector3.Distance(character.transform.position, target) >= 0.05f)
-        {
-            Vector3 heading = target-character.transform.position;
-            heading.Normalize();
-            Vector3 velocity = heading*moveSpeed;
-            character.transform.forward = heading;
-            character.transform.position += velocity * Time.deltaTime;
-        }else
-        {   
-            character.transform.position = target;
-            GetCurrentTile().player = character.gameObject;
-            path.Pop();
+        while(path.Count > 0){
+            GetCurrentTile().player = null;
+            Tile tile = path.Peek();
+            Vector3 target = tile.ground.transform.position;
+            target.y += character.GetComponent<Collider>().bounds.extents.y + tile.ground.GetComponent<Collider>().bounds.extents.y;
+            if(Vector3.Distance(character.transform.position, target) >= 0.05f)
+            {
+                Vector3 heading = target-character.transform.position;
+                heading.Normalize();
+                Vector3 velocity = heading*moveSpeed;
+                character.transform.forward = heading;
+                character.transform.position += velocity * Time.deltaTime;
+                yield return new WaitForSeconds(1);
+            }else
+            {   
+                character.transform.position = target;
+                GetCurrentTile().player = character.gameObject;
+                path.Pop();
+                yield return null;
+            }
         }
     }
 
@@ -60,20 +58,23 @@ public class MovementAction : Action
         HighlightTiles(selectableTiles, Color.green);
         HighlightTiles(tempPath, Color.grey);
         if(Input.GetMouseButtonUp(0))
-            SetPath(tempPath);
+        {
+            character.currentMovementPoint -= tempPath.Count();
+            HighlightTiles(selectableTiles, Tile.NORMAL_COLOR);
+            client.SendAction(new CharacterMessage(GetCurrentTile().x, target.x, GetCurrentTile().z, target.z, character.currentLifePoints));
+            path = tempPath;
+        }
     }
 
-    void SetPath(Stack<Tile> tempPath)
+    public void SetUp(int x, int z)
     {
-        path = tempPath;
-        character.currentMovementPoint -= path.Count();
-        HighlightTiles(selectableTiles, Tile.NORMAL_COLOR);
-        selectableTiles = null;
-        isExecuting = true;
+        path = map.AStarSearch(GetCurrentTile(), map.GetTile(x,z));
     }
 
-    public override bool IsValidForUse() =>  character.currentMovementPoint >= 0;
-    public override bool IsExecuting() => isExecuting;
-    public override bool IsSelecting() => false;
+    private void Update() {
+        if(path == null) return;
+        StartCoroutine(Move(path));
+    }
+    public bool IsExecuting() => path != null && path.Count > 0;
     protected override bool IsSelectedTileValid(Tile tile) => selectableTiles != null && tile.IsWalkable() && selectableTiles.Contains(tile);
 }
