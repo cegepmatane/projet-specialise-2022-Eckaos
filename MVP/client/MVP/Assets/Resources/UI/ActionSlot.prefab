@@ -123,7 +123,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 338825041111891735}
         m_TargetAssemblyTypeName: ActionSlot, TurnManager
-        m_MethodName: GetSelectableTiles
+        m_MethodName: Trigger
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -179,9 +179,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 4383710235284609741}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 86047bdf69bcb554da8bb1b863bf74ca, type: 3}
+  m_Script: {fileID: 11500000, guid: 15cae100cf5bc0942abfded1fdeea7c5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  skillNameText: {fileID: 0}
+  skillDescriptionText: {fileID: 0}
 --- !u!1 &7351557455087538282
 GameObject:
   m_ObjectHideFlags: 0
