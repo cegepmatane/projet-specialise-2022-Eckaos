@@ -8,7 +8,6 @@ export class GameRoom extends Room<ConnectionState> {
 
   onCreate (options: any) {
     this.setState(new ConnectionState())
-    this.autoDispose = true;
     this.onMessage("Start", (client, message) => {
       this.walls = this.generateMap(message.xSize, message.zSize)
       this.positions = this.generatePositions(this.walls);
@@ -50,6 +49,7 @@ export class GameRoom extends Room<ConnectionState> {
 
   onLeave (client: Client, consented: boolean) {
     this.removeRole(client)
+    if(this.clients.length === 0) this.disconnect();
   }
 
   private removeRole(client:Client){ 

@@ -16,13 +16,15 @@ public class RoomItem : MonoBehaviour
     [SerializeField]
     public Toggle toggle;
 
-    public ColyseusRoomAvailable room;
+    public string roomId;
+    public int clientNumber;
     
 
-    public void Initialization(string roomName, int playerNumber, ToggleGroup toggleGroup)
+    public void Initialization(string roomName, int clientNumber, ToggleGroup toggleGroup)
     {
-        this.roomName.text = roomName;
-        this.playerNumber.text = playerNumber+"/"+2;
+        this.roomId = roomName;
+        this.clientNumber = clientNumber;
+        UpdateUI();
         toggle.group = toggleGroup;
         toggle.onValueChanged.AddListener(
             delegate 
@@ -31,16 +33,22 @@ public class RoomItem : MonoBehaviour
                     OnRoomItemClick();
             });
     }
+
+    public void UpdateUI()
+    {
+        this.roomName.text = roomId;
+        this.playerNumber.text = clientNumber+"/"+2;
+    }
     public bool IsSelected() => toggle.isOn;
     public string GetName() => roomName.text;
-    public void SetRoom(ColyseusRoomAvailable room) {
-        this.room = room;
+    public void SetRoomId(string id) {
+        this.roomId = id;
         joinButton.onClick.AddListener(onJoinButtonClick);
     }
     private void onJoinButtonClick()
     {
-        GameClient.GetInstance().Join(room.roomId);
+        GameClient.GetInstance().Join(roomId);
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
     }
-    private void OnRoomItemClick() => toggle.group.GetComponent<RoomManager>().SetCurrentRoom(room);
+    private void OnRoomItemClick() => toggle.group.GetComponent<LobbyManager>().SetCurrentRoomId(roomId);
 }

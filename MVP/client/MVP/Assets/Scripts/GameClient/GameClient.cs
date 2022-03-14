@@ -12,14 +12,12 @@ public class GameClient : IGameClient
     private static GameClient gameClient;
     private  ColyseusClient colyseusClient;
     private ColyseusRoom<ConnectionState> room;
-    private List<ColyseusRoomAvailable> availableRooms;
     private bool canStartGame = false;
-    private bool[,] walls;
-    private List<(int x, int z)> positions;
-
-    private CharacterMessage characterMessages;
-    private ClientObserver observer;
-
+    private ClientObserver clientObserver;
+    private ColyseusRoom<dynamic> lobby;
+    private List<(string roomId, int clientNumber)> availableRoomList;
+    private LobbyObserver lobbyObserver;
+    
 
     public static GameClient GetInstance()
     {
@@ -30,38 +28,55 @@ public class GameClient : IGameClient
     private GameClient()
     {
         colyseusClient = new ColyseusClient("ws://localhost:3000");
-        availableRooms = new List<ColyseusRoomAvailable>();
-        AvailableRooms();
+        availableRoomList = new List<(string roomId, int clientNumber)>();
+        ConnectToLobbyRoom();
     }
-    
-    public async void AvailableRooms() {
-        if(colyseusClient == null) return;
-        var room = await colyseusClient.GetAvailableRooms("GameRoom");
-        availableRooms = room.ToList();
+
+    public async void ConnectToLobbyRoom()
+    {
+        lobby = await colyseusClient.JoinOrCreate<dynamic>("Lobby");
+        lobby.OnMessage<RoomListingData[]>("rooms", (data) => lobbyObserver.Start(data.Select(d => (d.roomId, d.clients)).ToList()));
+        lobby.OnMessage<RoomListingData>("+", (data) => lobbyObserver.Add(data.roomId, data.clients));
+        lobby.OnMessage<string>("-", (roomId) => lobbyObserver.Remove(roomId));
     }
-    public List<ColyseusRoomAvailable> GetAvailableRooms() => availableRooms;
+    class RoomListingData
+    {
+        public int clients;
+        public bool locked;
+        public bool p;
+        public double maxClients;
+        public object metadata;
+        public string name;
+        public string processId;
+        public string roomId;
+        public bool unlisted;
+    }
     public async void Create()
     {
         room = await colyseusClient.Create<ConnectionState>("GameRoom");//Change
         SetRoomCallback(room);
+        await lobby.Leave();
     }
     public async void Join(string roomId)
     {
         room = await colyseusClient.JoinById<ConnectionState>(roomId);
         SetRoomCallback(room);
+        await lobby.Leave();
     }
 
     private void SetRoomCallback(ColyseusRoom<ConnectionState> room)
     {
         room.OnMessage<NullReferenceException>("ButtonStart", (message) => canStartGame = true);
         room.OnMessage<NullReferenceException>("Start", (message) => SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1));
-        room.OnMessage<Walls>("MapInitialization", (message) => observer.InitializeMap(message.GetWalls()));
-        room.OnMessage<CharactersInitialization>("CharacterInitialization", (message) => observer.InitializeCharacters(message.GetPositions(), message.classNameList.ToList(), message.idList.ToList()));
-        room.OnMessage<CharacterMessage>("Action", (message) => observer.Action(message));
-        room.OnMessage<NullReferenceException>("End_Turn", (message) => observer.EndTurn());
+        room.OnMessage<Walls>("MapInitialization", (message) => clientObserver.InitializeMap(message.GetWalls()));
+        room.OnMessage<CharactersInitialization>("CharacterInitialization", (message) => clientObserver.InitializeCharacters(message.GetPositions(), message.classNameList.ToList(), message.idList.ToList()));
+        room.OnMessage<CharacterMessage>("Action", (message) => clientObserver.Action(message));
+        room.OnMessage<NullReferenceException>("End_Turn", (message) => clientObserver.EndTurn());
     }
 
-    public void RegisterObserver(ClientObserver c) => observer = c;
+    public void RegisterObserver(ClientObserver o) => clientObserver = o;
+    public void RegisterObserver(LobbyObserver o) => lobbyObserver = o;
+
     private void OnApplicationQuit() {
         if(room != null) room.Leave();
     }
