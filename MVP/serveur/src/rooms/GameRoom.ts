@@ -24,14 +24,14 @@ export class GameRoom extends Room<ConnectionState> {
       this.broadcast("End_Turn");
     });
 
-    //TODO faire en sorte que les classes soit générer par le serveur
-
     this.onMessage("Action", (client, message) => {
       this.clients.forEach(c => {
         if(c.id !== client.id)
           c.send("Action", message)
       })
     });
+
+    this.onMessage("SendMessage", (client, message) => this.broadcast("ReceiveMessage", message));
   }
 
   onJoin (client: Client, options: any) {
@@ -126,9 +126,6 @@ export class GameRoom extends Room<ConnectionState> {
   }
   
 }
-
-//TODO afficher le bouton start uniquement si on est le proprio de la room
-//TODO STATE => players & spectators + creator
 
 
 class Position {

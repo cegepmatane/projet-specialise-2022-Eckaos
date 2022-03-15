@@ -17,7 +17,9 @@ public class GameClient : IGameClient
     private ColyseusRoom<dynamic> lobby;
     private List<(string roomId, int clientNumber)> availableRoomList;
     private LobbyObserver lobbyObserver;
-    
+
+    private ChatObserver chatObserver;
+    private string pseudo;
 
     public static GameClient GetInstance()
     {
@@ -53,7 +55,7 @@ public class GameClient : IGameClient
     }
     public async void Create()
     {
-        room = await colyseusClient.Create<ConnectionState>("GameRoom");//Change
+        room = await colyseusClient.Create<ConnectionState>("GameRoom");
         SetRoomCallback(room);
         await lobby.Leave();
     }
@@ -72,10 +74,15 @@ public class GameClient : IGameClient
         room.OnMessage<CharactersInitialization>("CharacterInitialization", (message) => clientObserver.InitializeCharacters(message.GetPositions(), message.classNameList.ToList(), message.idList.ToList()));
         room.OnMessage<CharacterMessage>("Action", (message) => clientObserver.Action(message));
         room.OnMessage<NullReferenceException>("End_Turn", (message) => clientObserver.EndTurn());
+        room.OnMessage<ChatMessage>("ReceiveMessage", (message) => chatObserver.ReceiveMessage(message));
     }
 
     public void RegisterObserver(ClientObserver o) => clientObserver = o;
     public void RegisterObserver(LobbyObserver o) => lobbyObserver = o;
+    public void RegisterObserver(ChatObserver o) => chatObserver = o;
+
+    public void SendChatMessage(string message) => room.Send("SendMessage", new ChatMessage(pseudo, message));
+    public void SetPseudo(string pseudo) => this.pseudo = pseudo;
 
     private void OnApplicationQuit() {
         if(room != null) room.Leave();
@@ -88,6 +95,19 @@ public class GameClient : IGameClient
     public void SendInitialization() => room.Send("Initialization", new {});
 
     public string GetId() => room.SessionId;
+
+    public class ChatMessage {
+        public string pseudo;
+        public string message;
+
+        public ChatMessage(string pseudo, string message)
+        {
+            this.pseudo = pseudo;
+            this.message = message;
+        }
+        public ChatMessage(){}
+    }
+
     class Walls 
     {
         public bool[][] walls;

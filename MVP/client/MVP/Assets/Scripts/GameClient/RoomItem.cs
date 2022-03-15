@@ -18,12 +18,15 @@ public class RoomItem : MonoBehaviour
 
     public string roomId;
     public int clientNumber;
+
+    private InputField pseudoInput;
     
 
-    public void Initialization(string roomName, int clientNumber, ToggleGroup toggleGroup)
+    public void Initialization(string roomName, int clientNumber, InputField pseudoInput, ToggleGroup toggleGroup)
     {
         this.roomId = roomName;
         this.clientNumber = clientNumber;
+        this.pseudoInput = pseudoInput;
         UpdateUI();
         toggle.group = toggleGroup;
         toggle.onValueChanged.AddListener(
@@ -47,6 +50,9 @@ public class RoomItem : MonoBehaviour
     }
     private void onJoinButtonClick()
     {
+        if(pseudoInput.text.Equals(""))
+            return;
+        GameClient.GetInstance().SetPseudo(pseudoInput.text);
         GameClient.GetInstance().Join(roomId);
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
     }
