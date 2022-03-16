@@ -14,7 +14,10 @@ public class ClassPicker : MonoBehaviour
     {
         classes = Resources.LoadAll<Class>("Class").ToList();
         foreach (var dropdown in dropdowns)
+        {
             foreach(var c in classes)
                 dropdown.options.Add(new Dropdown.OptionData(c.className));
+            dropdown.SetValueWithoutNotify(0);
+        }
     }
 }
