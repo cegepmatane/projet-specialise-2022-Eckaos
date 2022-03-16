@@ -11,7 +11,7 @@ export class GameRoom extends Room<ConnectionState> {
     this.onMessage("Start", (client, message) => {
       this.walls = this.generateMap(message.xSize, message.zSize)
       this.positions = this.generatePositions(this.walls);
-      this.classes = this.getCharactersClass();
+      this.classes = [message.class1, message.class2];
       this.broadcast("Start");
     })
 
@@ -32,6 +32,20 @@ export class GameRoom extends Room<ConnectionState> {
     });
 
     this.onMessage("SendMessage", (client, message) => this.broadcast("ReceiveMessage", message));
+    this.onMessage("ChangeClass1", (client, message) => 
+    {
+      this.clients.forEach(c => {
+        if(c.sessionId != client.sessionId)
+          c.send("ChangeClass1", message);
+      })
+    });
+    this.onMessage("ChangeClass2", (client, message) => 
+    {
+      this.clients.forEach(c => {
+        if(c.sessionId != client.sessionId)
+          c.send("ChangeClass2", message);
+      })
+    });
   }
 
   onJoin (client: Client, options: any) {

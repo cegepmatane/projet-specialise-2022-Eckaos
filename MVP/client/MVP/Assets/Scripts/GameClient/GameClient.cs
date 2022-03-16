@@ -13,12 +13,12 @@ public class GameClient : IGameClient
     private  ColyseusClient colyseusClient;
     private ColyseusRoom<ConnectionState> room;
     private bool canStartGame = false;
-    private ClientObserver clientObserver;
     private ColyseusRoom<dynamic> lobby;
     private List<(string roomId, int clientNumber)> availableRoomList;
     private LobbyObserver lobbyObserver;
-
+    private ClientObserver clientObserver;
     private ChatObserver chatObserver;
+    private WaitingRoomObserver waitingRoomObserver;
     private string pseudo;
 
     public static GameClient GetInstance()
@@ -75,11 +75,14 @@ public class GameClient : IGameClient
         room.OnMessage<CharacterMessage>("Action", (message) => clientObserver.Action(message));
         room.OnMessage<NullReferenceException>("End_Turn", (message) => clientObserver.EndTurn());
         room.OnMessage<ChatMessage>("ReceiveMessage", (message) => chatObserver.ReceiveMessage(message));
+        room.OnMessage<string>("ChangeClass1", (message) => waitingRoomObserver.ChangeClass1UI(message));
+        room.OnMessage<string>("ChangeClass2", (message) => waitingRoomObserver.ChangeClass2UI(message));
     }
 
     public void RegisterObserver(ClientObserver o) => clientObserver = o;
     public void RegisterObserver(LobbyObserver o) => lobbyObserver = o;
     public void RegisterObserver(ChatObserver o) => chatObserver = o;
+    public void RegisterObserver(WaitingRoomObserver o) => waitingRoomObserver = o;
 
     public void SendChatMessage(string message) => room.Send("SendMessage", new ChatMessage(pseudo, message));
     public void SetPseudo(string pseudo) => this.pseudo = pseudo;

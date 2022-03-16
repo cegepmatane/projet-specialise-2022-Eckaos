@@ -5,7 +5,7 @@ using Colyseus;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
-public class RoomsManager : MonoBehaviour
+public class RoomsManager : MonoBehaviour, ClassPickerObserver, WaitingRoomObserver
 {
     private GameClient client;
     private ColyseusRoom<ConnectionState> room;
@@ -15,14 +15,16 @@ public class RoomsManager : MonoBehaviour
     private Button returnButton;
     [SerializeField]
     private Dropdown sizeDropdown;
-
-    
+    [SerializeField]
+    private ClassPicker classPicker;
 
     private void Start() {
         client = GameClient.GetInstance();
         startButton.onClick.AddListener(StartGame);
         startButton.gameObject.SetActive(false);
         returnButton.onClick.AddListener(Return);
+        classPicker.RegisterObserver(this);
+        client.RegisterObserver(this);
     }
 
     private void Update() {
@@ -36,7 +38,7 @@ public class RoomsManager : MonoBehaviour
     {
         if(room == null) return;
         Size size = Size.GetSize(sizeDropdown.value);
-        room.Send("Start", new {xSize = size.length, zSize = size.width});
+        room.Send("Start", new {xSize = size.length, zSize = size.width, class1 = classPicker.GetClass1(), class2 = classPicker.GetClass2() });
     }
 
     public void Return()
@@ -44,6 +46,23 @@ public class RoomsManager : MonoBehaviour
         room.Leave();
         client.ConnectToLobbyRoom();
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex - 1);
+    }
+
+    public void ChangeClass1()
+    {
+        room?.Send("ChangeClass1", classPicker.GetClass1());
+    }
+    public void ChangeClass2()
+    {
+        room?.Send("ChangeClass2", classPicker.GetClass2());
+    }
+    public void ChangeClass1UI(string class1)
+    {
+        classPicker.SetClass1(class1);
+    }
+    public void ChangeClass2UI(string class2)
+    {
+        classPicker.SetClass2(class2);
     }
 
 
