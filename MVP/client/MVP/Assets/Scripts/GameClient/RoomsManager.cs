@@ -4,6 +4,7 @@ using UnityEngine;
 using Colyseus;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using System.Linq;
 
 public class RoomsManager : MonoBehaviour, ClassPickerObserver, WaitingRoomObserver
 {
@@ -17,9 +18,17 @@ public class RoomsManager : MonoBehaviour, ClassPickerObserver, WaitingRoomObser
     private Dropdown sizeDropdown;
     [SerializeField]
     private ClassPicker classPicker;
+    [SerializeField]
+    private GameObject spectatorPrefab;
+    private List<Text> spectatorsText;
+    [SerializeField]
+    private RectTransform spectatorListPosition;
+    [SerializeField]
+    private List<Text> playersText;
 
     private void Start() {
         client = GameClient.GetInstance();
+        spectatorsText = new List<Text>();
         startButton.onClick.AddListener(StartGame);
         startButton.gameObject.SetActive(false);
         returnButton.onClick.AddListener(Return);
@@ -65,6 +74,26 @@ public class RoomsManager : MonoBehaviour, ClassPickerObserver, WaitingRoomObser
         classPicker.SetClass2(class2);
     }
 
+    public void UpdatePlayers(string[] pseudos)
+    {
+        for (int i = 0; i < pseudos.Length; i++)
+            playersText[i].text = pseudos[i];
+    }
+
+    public void UpdateSpectators(string[] pseudos)
+    {
+        spectatorsText.ForEach(t => Destroy(t.transform.parent.gameObject));
+        foreach (var pseudo in pseudos)
+        {
+            GameObject spectator = Instantiate(spectatorPrefab, Vector3.zero, Quaternion.identity);
+            spectator.transform.SetParent(spectatorListPosition);
+            spectator.transform.localPosition = Vector3.zero;
+            spectator.transform.localScale = Vector3.one;
+            Text text = spectator.GetComponentInChildren<Text>();
+            text.text = pseudo;
+            spectatorsText.Add(text);
+        }
+    }
 
     class Size
     {

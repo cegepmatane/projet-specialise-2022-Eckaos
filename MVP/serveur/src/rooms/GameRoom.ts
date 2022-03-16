@@ -50,8 +50,11 @@ export class GameRoom extends Room<ConnectionState> {
 
   onJoin (client: Client, options: any) {
     this.giveRole(client)
+    client.userData = {pseudo : options.pseudo}
     if(this.clients.length === 1)
       client.send("ButtonStart");
+    this.broadcast("Players", this.clients.map(c => {return c.userData.pseudo}).slice(0,2))
+    this.broadcast("Spectators", this.clients.map(c => {return c.userData.pseudo}).slice(2))
   }
 
   private giveRole(client:Client) {
@@ -63,6 +66,10 @@ export class GameRoom extends Room<ConnectionState> {
 
   onLeave (client: Client, consented: boolean) {
     this.removeRole(client)
+    if(this.state.players.includes(client.sessionId))
+      this.broadcast("RemovePlayer", client.userData.pseudo);
+    else
+      this.broadcast("RemoveSpectator", client.userData.pseudo)
     if(this.clients.length === 0) this.disconnect();
   }
 
@@ -123,24 +130,8 @@ export class GameRoom extends Room<ConnectionState> {
     }
     return positions
   }
-
-  private getRandomClassName()
-  {
-    const values = Object.keys(Class);
-    return values[Math.floor(Math.random() * values.length)];
-  }
-
-  private getCharactersClass()
-  {
-    var classNameList = [];
-    for (let i = 0; i < 2; i++) {
-      classNameList.push(this.getRandomClassName());
-    }
-    return classNameList;
-  }
   
 }
-
 
 class Position {
   public x:number;
@@ -149,9 +140,4 @@ class Position {
     this.x = x;
     this.z = z;
   }
-}
-
-enum Class{
-  test="test",
-  test2="test2"
 }

@@ -55,13 +55,13 @@ public class GameClient : IGameClient
     }
     public async void Create()
     {
-        room = await colyseusClient.Create<ConnectionState>("GameRoom");
+        room = await colyseusClient.Create<ConnectionState>("GameRoom", new Dictionary<string, object>{["pseudo"]=pseudo});
         SetRoomCallback(room);
         await lobby.Leave();
     }
     public async void Join(string roomId)
     {
-        room = await colyseusClient.JoinById<ConnectionState>(roomId);
+        room = await colyseusClient.JoinById<ConnectionState>(roomId, new Dictionary<string, object>{["pseudo"]=pseudo});
         SetRoomCallback(room);
         await lobby.Leave();
     }
@@ -77,6 +77,8 @@ public class GameClient : IGameClient
         room.OnMessage<ChatMessage>("ReceiveMessage", (message) => chatObserver.ReceiveMessage(message));
         room.OnMessage<string>("ChangeClass1", (message) => waitingRoomObserver.ChangeClass1UI(message));
         room.OnMessage<string>("ChangeClass2", (message) => waitingRoomObserver.ChangeClass2UI(message));
+        room.OnMessage<string[]>("Players", (message) => waitingRoomObserver.UpdatePlayers(message));
+        room.OnMessage<string[]>("Spectators", (message) => waitingRoomObserver.UpdateSpectators(message));
     }
 
     public void RegisterObserver(ClientObserver o) => clientObserver = o;

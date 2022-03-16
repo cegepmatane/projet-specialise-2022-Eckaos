@@ -193,7 +193,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: New Text
+  m_Text: 
 --- !u!222 &20612518
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -1847,7 +1847,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: New Text
+  m_Text: 
 --- !u!222 &513964280
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -2083,6 +2083,11 @@ MonoBehaviour:
   returnButton: {fileID: 907498708}
   sizeDropdown: {fileID: 1404658540}
   classPicker: {fileID: 826203108}
+  spectatorPrefab: {fileID: 7034914571481170675, guid: cc795edbf638e5647b71874fafda1894, type: 3}
+  spectatorListPosition: {fileID: 2145140127}
+  playersText:
+  - {fileID: 20612517}
+  - {fileID: 513964279}
 --- !u!1 &826203106
 GameObject:
   m_ObjectHideFlags: 0
